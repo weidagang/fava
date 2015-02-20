@@ -16,7 +16,7 @@ public class Lists {
     return new F2<T, List<T>, List<T>>() {
       @Override
       public List<T> apply(T arg1, List<T> arg2) {
-        ArrayList result = new ArrayList(arg2);
+        ArrayList<T> result = new ArrayList<T>(arg2);
         result.add(arg1);
         return result;
       }
