@@ -16,7 +16,10 @@ public final class Currying {
   /** 
    * Function of type: T1 -> T2 -> R
    * 
-   * Users of this class only need to implement the 2 arguments version of {@code apply},
+   * <p> This class implements the {@code F1<T1, F1<T2, R>>} interface, meaning a {@code F2}
+   * instance is a curried function, it will return another function when partially applied.
+   * 
+   * <p> Subclasses of this class only need to implement the 2 arguments version of {@code apply},
    * then the curried version will be available automatically.
    */
   public static abstract class F2<T1, T2, R> implements F1<T1, F1<T2, R>> {
@@ -36,7 +39,10 @@ public final class Currying {
   /** 
    * Function of type: T1 -> T2 -> T3 -> R
    * 
-   * Users of this class only need to implement the 3 arguments version of {@code apply},
+   * <p> This class implements the {@code F1<T1, F2<T2, T3, R>>} interface, meaning a {@code F3}
+   * instance is a curried function, it will return another function when partially applied.
+   * 
+   * <p> Subclasses of this class only need to implement the 3 arguments version of {@code apply},
    * then the curried version will be available automatically.
    */
   public static abstract class F3<T1, T2, T3, R> implements F1<T1, F2<T2, T3, R>> {
@@ -53,6 +59,9 @@ public final class Currying {
     }
   }
 
+  /**
+   * Casts {@code T1 -> (T2 -> R)} to {@code T1 -> T2 -> R}.
+   */
   public static <T1, T2, R> F2<T1, T2, R> cast(final F1<T1, F1<T2, R>> f) {
     return new F2<T1, T2, R>() {
       @Override
