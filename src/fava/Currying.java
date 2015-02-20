@@ -1,37 +1,49 @@
 package fava;
 
 /**
- * Function types and facilities to simulate currying in Java.
+ * Utilities for currying.
  * 
  * @author Dagang Wei (weidagang@gmail.com)
  */
 public final class Currying {
-  /** Function of type: T -> R */
+  /** 
+   * Function of type: T -> R
+   */
   public static interface F1<T, R> {
-    R apply(T arg);
+    R apply(final T arg);
   }
 
-  /** Function of type: T1 -> T2 -> R */
-  public static abstract class F2<T1, T2, R> {
+  /** 
+   * Function of type: T1 -> T2 -> R
+   * 
+   * Users of this class only need to implement the 2 arguments version of {@code apply},
+   * then the curried version will be available automatically.
+   */
+  public static abstract class F2<T1, T2, R> implements F1<T1, F1<T2, R>> {
     public abstract R apply(T1 arg1, T2 arg2);
 
-    /** Partial application: (T1 -> T2 -> R) -> T1 -> (T2 -> R) */
-    public F1<T2, R> apply(final T1 arg1) {
+    @Override
+    public final F1<T2, R> apply(final T1 arg1) {
       return new F1<T2, R>() {
         @Override
         public R apply(T2 arg2) {
           return F2.this.apply(arg1, arg2);
-        }
+        };
       };
     }
   }
 
-  /** Function of type: T1 -> T2 -> T3 -> R */
-  public static abstract class F3<T1, T2, T3, R> {
+  /** 
+   * Function of type: T1 -> T2 -> T3 -> R
+   * 
+   * Users of this class only need to implement the 3 arguments version of {@code apply},
+   * then the curried version will be available automatically.
+   */
+  public static abstract class F3<T1, T2, T3, R> implements F1<T1, F2<T2, T3, R>> {
     public abstract R apply(T1 arg1, T2 arg2, T3 arg3);
 
-    /** Partial application: (T1 -> T2 -> T3 -> R) -> T1 -> (T2 -> T3 -> R) */
-    public F2<T2, T3, R> apply(final T1 arg1) {
+    @Override
+    public final F2<T2, T3, R> apply(final T1 arg1) {
       return new F2<T2, T3, R>() {
         @Override
         public R apply(T2 arg2, T3 arg3) {
@@ -39,5 +51,14 @@ public final class Currying {
         }
       };
     }
+  }
+
+  public static <T1, T2, R> F2<T1, T2, R> cast(final F1<T1, F1<T2, R>> f) {
+    return new F2<T1, T2, R>() {
+      @Override
+      public R apply(T1 arg1, T2 arg2) {
+        return f.apply(arg1).apply(arg2);
+      }
+    };
   }
 }
