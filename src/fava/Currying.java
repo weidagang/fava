@@ -7,14 +7,14 @@ package fava;
  */
 public final class Currying {
   /** 
-   * Function of type: T -> R
+   * Function of type: {@code T -> R}
    */
   public static interface F1<T, R> {
     R apply(final T arg);
   }
 
   /** 
-   * Function of type: T1 -> T2 -> R
+   * Function of type: {@code T1 -> T2 -> R}
    * 
    * <p> This class implements the {@code F1<T1, F1<T2, R>>} interface, meaning a {@code F2}
    * instance is a curried function, it will return another function when partially applied.
@@ -37,7 +37,7 @@ public final class Currying {
   }
 
   /** 
-   * Function of type: T1 -> T2 -> T3 -> R
+   * Function of type: {@code T1 -> T2 -> T3 -> R}
    * 
    * <p> This class implements the {@code F1<T1, F2<T2, T3, R>>} interface, meaning a {@code F3}
    * instance is a curried function, it will return another function when partially applied.
