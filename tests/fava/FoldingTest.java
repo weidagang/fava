@@ -1,6 +1,5 @@
 package fava;
 
-import static fava.Folding.foldl;
 import static fava.Folding.foldr;
 import static org.junit.Assert.assertEquals;
 
@@ -20,7 +19,7 @@ public class FoldingTest {
       }
     };
 
-    assertEquals("(((0+1)+2)+3)", foldl(addParenthese, "0", Arrays.asList(1, 2, 3)));
+    assertEquals("(((0+1)+2)+3)", Folding.<Integer, String>foldl().apply(addParenthese, "0", Arrays.asList(1, 2, 3)));
   }
 
   @Test

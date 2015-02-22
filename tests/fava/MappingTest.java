@@ -13,14 +13,15 @@ import fava.Currying.F1;
 public class MappingTest {
   @Test
   public void testMap() {
-    List<Integer> result = map(
+    F1<List<Integer>, List<Integer>> squareOverList = map(
         new F1<Integer, Integer>() {
           @Override
           public Integer apply(Integer arg) {
             return arg * arg;
           }
-        },
-        Arrays.asList(1, 2, 3));
+        }
+    );
+    List<Integer> result = squareOverList.apply(Arrays.asList(1, 2, 3));
     assertEquals(3, result.size());
     assertEquals(1, (int)result.get(0));
     assertEquals(4, (int)result.get(1));
