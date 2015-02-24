@@ -8,6 +8,7 @@ import java.util.List;
 
 import fava.Currying.F1;
 import fava.Currying.F2;
+import fava.data.Lists;
 
 /**
  * Utilities for mapping.

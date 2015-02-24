@@ -1,10 +1,11 @@
-package fava;
+package fava.data;
 
 import static fava.Folding.foldr;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import fava.Currying;
 import fava.Currying.F1;
 import fava.Currying.F2;
 
@@ -41,12 +42,5 @@ public class Lists {
    */
   public static <T> F1<List<T>, List<T>> reverse() {
     return foldr(Lists.<T>append(), new ArrayList<T>());
-  }
-
-  /**
-   * Alias for Lists.<String>reverse
-   */
-  public static F1<List<String>, List<String>> reverseStringList() {
-    return Lists.<String>reverse();
   }
 }

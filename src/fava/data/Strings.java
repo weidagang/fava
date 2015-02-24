@@ -1,4 +1,4 @@
-package fava;
+package fava.data;
 
 import static fava.Currying.cast;
 import static fava.Folding.foldl;
@@ -6,6 +6,7 @@ import static fava.Folding.foldl;
 import java.util.Arrays;
 import java.util.List;
 
+import fava.Currying;
 import fava.Currying.F1;
 import fava.Currying.F2;
 
