@@ -13,6 +13,12 @@ public final class Currying {
     R apply(final T arg);
   }
 
+  /**
+   * Unary operator of type: T -> T
+   */
+  public static interface P1<T> extends F1<T, T> {
+  }
+
   /** 
    * Function of type: {@code T1 -> T2 -> R}
    * 
@@ -37,6 +43,12 @@ public final class Currying {
   }
 
   /** 
+   * Binary operator of type: T -> T -> T
+   */
+  public static abstract class P2<T> extends F2<T, T, T> {
+  }
+
+  /** 
    * Function of type: {@code T1 -> T2 -> T3 -> R}
    * 
    * <p> This class implements the {@code F1<T1, F2<T2, T3, R>>} interface, meaning a {@code F3}
@@ -57,6 +69,12 @@ public final class Currying {
         }
       };
     }
+  }
+
+  /** 
+   * 3-ary operator with type: T -> T -> T -> T
+   */
+  public static abstract class P3<T> extends F3<T, T, T, T> {
   }
 
   /**

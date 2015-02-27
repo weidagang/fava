@@ -5,7 +5,6 @@ import static fava.Folding.foldr;
 import java.util.ArrayList;
 import java.util.List;
 
-import fava.Currying;
 import fava.Currying.F1;
 import fava.Currying.F2;
 

@@ -1,5 +1,7 @@
 package fava;
 
+import static fava.data.Maybe.fmap;
+import static fava.data.Maybe.fmap2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -9,8 +11,6 @@ import org.junit.Test;
 import fava.Currying.F1;
 import fava.data.Maybe;
 import fava.data.Numbers;
-import fava.functor.ApplicativeFunctors;
-import fava.functor.Functors;
 
 public class MaybeTest {
   F1<Integer, String> intToStr  = new F1<Integer, String>() {
@@ -23,14 +23,14 @@ public class MaybeTest {
   @Test
   public void testNothing() {
     Maybe<Integer> nothing = Maybe.nothing();
-    Maybe<String> result = nothing.fmap(intToStr);
+    Maybe<String> result = fmap(intToStr).apply(nothing);
     assertFalse(result.hasValue());
   }
 
   @Test
   public void testJust() {
     Maybe<Integer> just3 = Maybe.just(3);
-    Maybe<String> result = just3.fmap(intToStr);
+    Maybe<String> result = fmap(intToStr).apply(just3);
     assertTrue(result.hasValue());
     assertEquals("3", result.getValue());
   }
@@ -39,6 +39,6 @@ public class MaybeTest {
   public void testAdd() {
     Maybe<Integer> just3 = Maybe.just(3);
     Maybe<Integer> just4 = Maybe.just(4);
-    assertEquals(Maybe.just(7), Maybe.fmap2(Numbers.add()).apply(just3, just4));
+    assertEquals(Maybe.just(7), fmap2(Numbers.add()).apply(just3, just4));
   }
 }
