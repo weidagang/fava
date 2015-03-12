@@ -13,7 +13,7 @@ import fava.data.Lists;
 /**
  * Utilities for mapping.
  *
- * @author Dagang Wei (weidagang@gmail.com)
+ * @author dagang.wei (weidagang@gmail.com)
  * @see @see <a href="https://en.wikipedia.org/wiki/Map_(higher-order_function)">Map (higher-order function)</a>
  */
 public class Mapping {

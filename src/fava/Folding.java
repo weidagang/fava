@@ -9,7 +9,7 @@ import fava.Currying.F3;
 /**
  * Utilities for folding (a.k.a reducing).
  * 
- * @author Dagang Wei (weidagang@gmail.com)
+ * @author dagang.wei (weidagang@gmail.com)
  * @see <a href="https://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold (higher-order function)</a>
  */
 public class Folding {

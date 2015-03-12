@@ -3,7 +3,7 @@ package fava;
 /**
  * Utilities for currying.
  * 
- * @author Dagang Wei (weidagang@gmail.com)
+ * @author dagang.wei (weidagang@gmail.com)
  */
 public final class Currying {
   /** 

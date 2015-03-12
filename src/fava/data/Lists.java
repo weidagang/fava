@@ -11,7 +11,7 @@ import fava.Currying.F2;
 /**
  * Utilities for list operations.
  * 
- * @author Dagang Wei (weidagang@gmail.com)
+ * @author dagang.wei (weidagang@gmail.com)
  */
 public class Lists {
   /**

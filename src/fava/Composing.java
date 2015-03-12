@@ -5,7 +5,7 @@ import fava.Currying.F1;
 /**
  * Utilities for composing functions. 
  * 
- * @author Dagang Wei (weidagang@gmail.com)
+ * @author dagang.wei (weidagang@gmail.com)
  */
 public class Composing {
   /** 
