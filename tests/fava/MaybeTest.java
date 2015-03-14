@@ -1,7 +1,7 @@
 package fava;
 
 import static fava.data.Maybe.fmap;
-import static fava.data.Maybe.fmap2;
+import static fava.data.Maybe.liftA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -39,6 +39,6 @@ public class MaybeTest {
   public void testAdd() {
     Maybe<Integer> just3 = Maybe.just(3);
     Maybe<Integer> just4 = Maybe.just(4);
-    assertEquals(Maybe.just(7), fmap2(Numbers.add()).apply(just3, just4));
+    assertEquals(Maybe.just(7), liftA(Numbers.add()).apply(just3, just4));
   }
 }

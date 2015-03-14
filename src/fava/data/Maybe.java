@@ -21,7 +21,7 @@ public class Maybe<T> {
     };
   }
 
-  public static <T1, T2, R> F2<Maybe<T1>, Maybe<T2>, Maybe<R>> fmap2(final F2<T1, T2, R> f) {
+  public static <T1, T2, R> F2<Maybe<T1>, Maybe<T2>, Maybe<R>> liftA(final F2<T1, T2, R> f) {
     return new F2<Maybe<T1>, Maybe<T2>, Maybe<R>>() {
       @Override public Maybe<R> apply(Maybe<T1> arg1, Maybe<T2> arg2) {
         return (arg1.hasValue && arg2.hasValue) ? just(f.apply(arg1.value, arg2.value)) : Maybe.<R>nothing();

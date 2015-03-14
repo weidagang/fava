@@ -28,7 +28,7 @@ public class Promises {
     };
   }
 
-  public static <T1, T2, R> F2<Promise<T1>, Promise<T2>, Promise<R>> fmap2(final F2<T1, T2, R> f) {
+  public static <T1, T2, R> F2<Promise<T1>, Promise<T2>, Promise<R>> liftA(final F2<T1, T2, R> f) {
     return new F2<Promise<T1>, Promise<T2>, Promise<R>>() {
       private Promise.State state1 = Promise.State.PENDING;
       private Promise.State state2 = Promise.State.PENDING;

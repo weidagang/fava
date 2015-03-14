@@ -1,15 +1,19 @@
 package fava;
 
 import static fava.Composing.compose;
+import static fava.data.Lists.flatMap;
 import static fava.data.Lists.map;
+import static fava.data.Lists.sort;
+import static fava.data.Strings.compareIgnoreCase;
 import static fava.data.Strings.concat;
 import static fava.data.Strings.join;
 import static fava.data.Strings.split;
 import static fava.data.Strings.toUpperCase;
 import static fava.promise.Promises.fmap;
-import static fava.promise.Promises.fmap2;
+import static fava.promise.Promises.liftA;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,16 +39,20 @@ public class PromiseTest {
     assertEquals("JAVA_IN_PROGRAMMING_LOVE_I", f.apply(promise(URL2)).get());
   }
 
+  /**
+   * Concatenates 2 web pages which are asynchronously fetched from the Internet.
+   * 
+   * <p>This test case demonstrates lifting a function of type "String -> String"
+   * into a function of type "Promise<String> -> Promise<String>".
+   */
   @Test
-  public void testPromise_fmap2() throws Exception {
-    F2<Promise<String>, Promise<String>, Promise<String>> f = fmap2(concat());
-    Promise<String> result = f.apply(promise(URL1), promise(URL2));
-    assertEquals("Hello worldI love programming in Java", result.get());
-  }
-
-  @Test
-  public void testPromise() throws Exception {
-    Lists.<String, List<String>>map(split(" "));
+  public void testPromise_liftA() throws Exception {
+    // Promise.liftA lifts concat into concatPromise. This allows us to abstract away
+    // the asynchronous callbacks from the scene, consequently concatenating 2 asynchronous
+    // strings looks the same as concatenating 2 regular strings.
+    F2<Promise<String>, Promise<String>, Promise<String>> concatPromise = liftA(concat());
+    Promise<String> page1AndPage2 = concatPromise.apply(promise(URL1), promise(URL2));
+    assertEquals("Hello worldI love programming in Java", page1AndPage2.get());
   }
 
   /**
