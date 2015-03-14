@@ -1,7 +1,7 @@
 package fava;
 
 /**
- * Utilities for currying.
+ * Functions for currying.
  * 
  * @author dagang.wei (weidagang@gmail.com)
  */

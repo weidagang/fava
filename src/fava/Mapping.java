@@ -11,7 +11,7 @@ import fava.Currying.F2;
 import fava.data.Lists;
 
 /**
- * Utilities for mapping.
+ * Functions for mapping.
  *
  * @author dagang.wei (weidagang@gmail.com)
  * @see @see <a href="https://en.wikipedia.org/wiki/Map_(higher-order_function)">Map (higher-order function)</a>

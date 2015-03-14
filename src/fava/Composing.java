@@ -3,7 +3,7 @@ package fava;
 import fava.Currying.F1;
 
 /**
- * Utilities for composing functions. 
+ * Functions for composing functions. 
  * 
  * @author dagang.wei (weidagang@gmail.com)
  */

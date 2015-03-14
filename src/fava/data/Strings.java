@@ -9,7 +9,11 @@ import java.util.List;
 import fava.Currying.F1;
 import fava.Currying.F2;
 
-/** Utilities for string */
+/**
+ * Functions for strings 
+ * 
+ * @author dagang.wei (weidagang@gmail.com)
+ **/
 public class Strings {
   /**
    * Curried function for splitting a string by a delimiter.
@@ -101,6 +105,41 @@ public class Strings {
     return new F1<String, String>() {
       @Override public String apply(String str) {
         return str.toLowerCase();
+      }
+    };
+  }
+
+  /**
+   * Curried function for comparing two strings lexicographically.
+   * 
+   * @return the value 0 if the argument string is equal to this 
+   * string; a value less than 0 if this string is lexicographically
+   * less than the string argument; and a value greater than 0 if
+   * this string is lexicographically greater than the string argument.
+   */
+  public static F2<String, String, Integer> compare() {
+    return new F2<String, String, Integer>() {
+      @Override
+      public Integer apply(String str1, String str2) {
+        return str1.compareTo(str2);
+      }
+    };
+  }
+
+  /**
+   * Curried function for comparing two strings lexicographically,
+   * ignoring case differences.
+   * 
+   * @return the value 0 if the argument string is equal to this 
+   * string; a value less than 0 if this string is lexicographically
+   * less than the string argument; and a value greater than 0 if
+   * this string is lexicographically greater than the string argument.
+   */
+  public static F2<String, String, Integer> compareIgnoreCase() {
+    return new F2<String, String, Integer>() {
+      @Override
+      public Integer apply(String str1, String str2) {
+        return str1.compareToIgnoreCase(str2);
       }
     };
   }
