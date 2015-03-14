@@ -78,9 +78,9 @@ public final class Currying {
   }
 
   /**
-   * Casts {@code T1 -> (T2 -> R)} to {@code T1 -> T2 -> R}.
+   * Uncurry {@code T1 -> T2 -> R} to {@code (T1 -> T2) -> R}.
    */
-  public static <T1, T2, R> F2<T1, T2, R> cast(final F1<T1, F1<T2, R>> f) {
+  public static <T1, T2, R> F2<T1, T2, R> uncurry(final F1<T1, F1<T2, R>> f) {
     return new F2<T1, T2, R>() {
       @Override
       public R apply(T1 arg1, T2 arg2) {

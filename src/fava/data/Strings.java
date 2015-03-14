@@ -1,6 +1,6 @@
 package fava.data;
 
-import static fava.Currying.cast;
+import static fava.Currying.uncurry;
 import static fava.Folding.foldl;
 
 import java.util.Arrays;
@@ -40,6 +40,18 @@ public class Strings {
   }
 
   /**
+   * Curried function for concatenating two strings.
+   */
+  public static F2<String, String, String> concat() {
+    return new F2<String, String, String>() {
+      @Override
+      public String apply(String arg1, String arg2) {
+        return arg1 + arg2;
+      }
+    };
+  }
+
+  /**
    * Curried function for joining a list of string by a delimiter.
    * 
    * <p> join :: String -> [String] -> String
@@ -60,7 +72,7 @@ public class Strings {
       }
     };
     
-    return cast(joinF);
+    return uncurry(joinF);
   }
 
   /**

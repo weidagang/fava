@@ -85,7 +85,7 @@ public abstract class Promise<T> {
     assert state == State.PENDING;
 
     this.value = value;
-    state = State.SUCCEEDED;
+    this.state = State.SUCCEEDED;
     for (Listener<T> listener : listeners) {
       listener.onSuccess(value);
     }
@@ -98,7 +98,8 @@ public abstract class Promise<T> {
   protected final void notifyFailure(Exception exception) {
     assert state == State.PENDING;
 
-    state = State.FAILED;
+    this.exception = exception;
+    this.state = State.FAILED;
     for (Listener<T> listener : listeners) {
       listener.onFailure(exception);
     }
