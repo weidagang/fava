@@ -1,7 +1,7 @@
 package fava;
 
 import static fava.Composing.compose;
-import static fava.Mapping.map;
+import static fava.data.Lists.map;
 import static fava.data.Strings.join;
 import static fava.data.Strings.split;
 import static fava.data.Strings.toUpperCase;

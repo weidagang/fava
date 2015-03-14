@@ -1,7 +1,7 @@
 package fava;
 
 import static fava.Composing.compose;
-import static fava.Mapping.map;
+import static fava.data.Lists.map;
 import static fava.data.Strings.concat;
 import static fava.data.Strings.join;
 import static fava.data.Strings.split;
@@ -11,6 +11,7 @@ import static fava.promise.Promises.fmap2;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -41,6 +42,11 @@ public class PromiseTest {
     assertEquals("Hello worldI love programming in Java", result.get());
   }
 
+  @Test
+  public void testPromise() throws Exception {
+    Lists.<String, List<String>>map(split(" "));
+  }
+
   /**
    * Fake HTTP promise for testing's purpose. It either returns a pre-configured
    * web page asynchronously or throws a "404 NOT FOUND" exception.
@@ -57,12 +63,12 @@ public class PromiseTest {
     }
 
     private HttpPromise(final String url) {
-      // Simulate asynchronous HTTP request of 2 seconds with thread.
+      // Simulate asynchronous HTTP request of 1 second with thread.
       new Thread(new Runnable() {
           @Override
           public void run() {
             try {
-              Thread.sleep(2000);
+              Thread.sleep(1000);
             } catch (InterruptedException e) {
               e.printStackTrace();
             }

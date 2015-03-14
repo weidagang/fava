@@ -78,7 +78,8 @@ public final class Currying {
   }
 
   /**
-   * Uncurry {@code T1 -> T2 -> R} to {@code (T1 -> T2) -> R}.
+   * Uncurries a function of type {@code T1 -> T2 -> R} to a function of type
+   * {@code (T1 -> T2) -> R}.
    */
   public static <T1, T2, R> F2<T1, T2, R> uncurry(final F1<T1, F1<T2, R>> f) {
     return new F2<T1, T2, R>() {
