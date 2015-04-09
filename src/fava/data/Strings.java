@@ -32,7 +32,7 @@ public class Strings {
   }
 
   /**
-   * Curried function for splitting a string by a delimiter with the first argument bound.
+   * Curried version of split with partial application as syntax sugar.
    * 
    * <p> splitBy :: String -> String -> [String]
    * 
@@ -56,7 +56,21 @@ public class Strings {
   }
 
   /**
-   * Curried function for joining a list of string by a delimiter.
+   * Joines a list of strings by a delimiter.
+   */
+  public static String join(String delimiter, List<String> strings) {
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < strings.size(); i++) {
+      if (i > 0) {
+        builder.append(delimiter);
+      }
+      builder.append(strings.get(i));
+    }
+    return builder.toString();
+  }
+
+  /**
+   * Curried version of {@link join}.
    * 
    * <p> join :: String -> [String] -> String
    * 
@@ -64,19 +78,29 @@ public class Strings {
    * @param arg2 the string list
    */
   public static F2<String, List<String>, String> join() {
-    F1<String, F1<List<String>, String>> joinF = new F1<String, F1<List<String>, String>>() {
-      @Override public F1<List<String>, String> apply(final String delimiter) {
-        String initial = "";
-        final F2<String, String, String> f = new F2<String, String, String>() {
-          @Override public String apply(String e, String r) {
-            return r.length() == 0 ? e : r + delimiter + e;
-          }
-        };
-        return foldl(f, initial);
+    return new F2<String, List<String>, String>() {
+      @Override
+      public String apply(String delimiter, List<String> strings) {
+        return join(delimiter, strings);
       }
     };
-    
-    return uncurry(joinF);
+  }
+
+  /**
+   * Curried version of {@link join} with partial application as syntax suger.
+   * 
+   * <p> join :: String -> [String] -> String
+   * 
+   * @param arg1 the delimiter
+   * @param arg2 the string list
+   */
+  public static F1<List<String>, String> join(final String delimiter) {
+    return new F1<List<String>, String>() {
+      @Override
+      public String apply(List<String> strings) {
+        return join(delimiter, strings);
+      }
+    };
   }
 
   /**

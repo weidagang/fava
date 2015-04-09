@@ -1,7 +1,11 @@
 package fava.promise;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fava.Currying.F1;
 import fava.Currying.F2;
+import fava.data.Lists;
 import fava.promise.Promise.Listener;
 
 public class Promises {
@@ -86,6 +90,61 @@ public class Promises {
         });
 
         return promiseR;
+      }
+    };
+  }
+
+  public static <T, R> F1<List<Promise<T>>, Promise<R>> liftA(final F1<List<T>, R> f) {
+    return new F1<List<Promise<T>>, Promise<R>>() {
+      @Override
+      public Promise<R> apply(final List<Promise<T>> promisesT) {
+        final Promise<R> promiseR = new Promise<R>() {};
+        for (Promise<T> promiseT : promisesT) {
+          promiseT.addListener(new Listener<T>() {
+            @Override
+            public void onSuccess(T value) {
+              notifyIfDone(promisesT, promiseR);
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+              notifyIfDone(promisesT, promiseR);
+            }
+          });
+        }
+        return promiseR;
+      }
+
+      private void notifyIfDone(List<Promise<T>> promisesT, Promise<R> promiseR) {
+        Promise.State state = getState(promisesT);
+        if (state == Promise.State.SUCCEEDED) {
+          R value = f.apply(Lists.map(Promises.<T>getValue(), promisesT));
+          promiseR.notifySuccess(value);
+        } else if (state == Promise.State.FAILED) {
+          promiseR.notifyFailure(new Exception());
+        }
+      }
+
+      private Promise.State getState(List<Promise<T>> promises) {
+        boolean hasFailure = false;
+        for (Promise<?> promise : promises) {
+          if (promise.state() == Promise.State.PENDING) {
+            return Promise.State.PENDING;
+          }
+          if (promise.state() == Promise.State.FAILED) {
+            hasFailure = true;
+          }
+        }
+        return hasFailure ? Promise.State.FAILED : Promise.State.SUCCEEDED;
+      }
+    };
+  }
+
+  public static <T> F1<Promise<T>, T> getValue() {
+    return new F1<Promise<T>, T>() {
+      @Override
+      public T apply(Promise<T> promise) {
+        return promise.getValue();
       }
     };
   }

@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * 
  * @author dagang.wei (weidagang@gmail.com)
  */
-public abstract class Promise<T> {
+public class Promise<T> {
   /**
    * States of a promise.
    */
@@ -37,6 +37,26 @@ public abstract class Promise<T> {
   private ArrayList<Listener<T>> listeners = new ArrayList<Listener<T>>();
 
   /**
+   * Lifts a value into a promise.
+   */
+  public static <T> Promise<T> successOf(T value) {
+    Promise<T> promise = new Promise<T>();
+    promise.state = State.SUCCEEDED;
+    promise.value = value;
+    return promise;
+  }
+
+  /**
+   * Lifts a failure into a promise.
+   */
+  public static <T> Promise<T> failureOf(Exception exception) {
+    Promise<T> promise = new Promise<T>();
+    promise.state = State.FAILED;
+    promise.exception = exception;
+    return promise;
+  }
+
+  /**
    * Returns the current state of the promise.
    */
   public State state() {
@@ -44,10 +64,10 @@ public abstract class Promise<T> {
   }
 
   /**
-   * Returns the value or throws the exception. This method will block until the
-   * promise is fulfilled or rejected.
+   * Await until the promise is fulfilled or rejected, then returns the value
+   * or throws the exception.
    */
-  public T get() throws Exception {
+  public T await() throws Exception {
     while (state == State.PENDING) {
       try {
         Thread.sleep(1); //TODO: change the implementation later.
@@ -60,6 +80,26 @@ public abstract class Promise<T> {
     }
 
     throw exception;
+  }
+
+  /**
+   * Returns the value.
+   * 
+   * <p>Precondition: state == State.SUCCEEDED
+   */
+  public T getValue() {
+    assert state == State.SUCCEEDED;
+    return value;
+  }
+
+  /**
+   * Returns the exception.
+   *
+   * <p>Precondition: state == State.FAILED
+   */
+  public Exception getException() {
+    assert state == State.FAILED;
+    return exception;
   }
 
   /**

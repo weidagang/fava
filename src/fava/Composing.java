@@ -43,4 +43,33 @@ public class Composing {
       final F1<U3, R> f4) {
     return compose(compose(f1, f2, f3), f4);
   }
+
+  /**
+   * Composes 5 functions into one function.
+   * 
+   * <p> compose(f1, f2, f3, f4, f5) = compose(compose(f1, f2, f3, f4), f5)
+   */
+  public static <T, U1, U2, U3, U4, R> F1<T, R> compose(
+      final F1<T, U1> f1, 
+      final F1<U1, U2> f2, 
+      final F1<U2, U3> f3,
+      final F1<U3, U4> f4,
+      final F1<U4, R> f5) {
+    return compose(compose(f1, f2, f3, f4), f5);
+  }
+
+  /**
+   * Composes 6 functions into one function.
+   * 
+   * <p> compose(f1, f2, f3, f4, f5, f6) = compose(compose(f1, f2, f3, f4, f5, f6)
+   */
+  public static <T, U1, U2, U3, U4, U5, R> F1<T, R> compose(
+      final F1<T, U1> f1, 
+      final F1<U1, U2> f2, 
+      final F1<U2, U3> f3,
+      final F1<U3, U4> f4,
+      final F1<U4, U5> f5,
+      final F1<U5, R> f6) {
+    return compose(compose(f1, f2, f3, f4, f5), f6);
+  }
 }

@@ -124,6 +124,32 @@ public class Lists {
   }
 
   /**
+   * Checks if any of the element in a list matches the condition.
+   * 
+   * <p>exists :: (T -> Boolean) -> [T] -> Boolean
+   */
+  public static <T> boolean exists(F1<T, Boolean> predicate, List<T> list) {
+    for (T element : list) {
+      if (predicate.apply(element)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Curried version of {@link exists}.
+   */
+  public static <T> F2<F1<T, Boolean>, List<T>, Boolean> exists() {
+    return new F2<F1<T, Boolean>, List<T>, Boolean>() {
+      @Override
+      public Boolean apply(F1<T, Boolean> predicate, List<T> list) {
+        return exists(predicate, list);
+      }
+    };
+  }
+
+  /**
    * Maps a function over the elements of a list.
    *
    * <p> map: (T -> R) -> [T] -> [R]
@@ -191,5 +217,35 @@ public class Lists {
    */
   public static <T, R> F1<List<T>, List<R>> flatMap(F1<T, List<R>> f) {
     return Lists.<T, R>flatMap().apply(f);
+  }
+
+  /**
+   * Returns a list of the unique elements of another list. It will preserve the
+   * order between the elements.
+   * 
+   * <p>Time complexity: O(n^2)
+   *
+   * <p> unique :: [T] -> [T]
+   */
+  public static <T> List<T> unique(List<T> list) {
+    ArrayList<T> result = new ArrayList<T>();
+    for (T element : list) {
+      if (!result.contains(element)) {
+        result.add(element);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Curried version of {@link unique}.
+   */
+  public static <T> F1<List<T>, List<T>> unique() {
+    return new F1<List<T>, List<T>>() {
+      @Override
+      public List<T> apply(List<T> list) {
+        return unique(list);
+      }
+    };
   }
 }
