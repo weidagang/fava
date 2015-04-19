@@ -29,8 +29,8 @@ public final class Currying {
    * <p> This class implements the {@code F1<T1, F1<T2, R>>} interface, meaning a {@code F2}
    * instance is a curried function, it will return another function when partially applied.
    * 
-   * <p> Subclasses of this class only need to implement the 2 arguments version of {@code apply},
-   * then the curried version will be available automatically.
+   * <p> Subclasses only need to implement the 2 arguments version of {@code apply}, then the
+   * curried version will be available automatically.
    */
   public static abstract class F2<T1, T2, R> extends F1<T1, F1<T2, R>> {
     public abstract R apply(T1 arg1, T2 arg2);
@@ -62,8 +62,8 @@ public final class Currying {
    * <p> This class implements the {@code F1<T1, F2<T2, T3, R>>} interface, meaning a {@code F3}
    * instance is a curried function, it will return another function when partially applied.
    * 
-   * <p> Subclasses of this class only need to implement the 3 arguments version of {@code apply},
-   * then the curried version will be available automatically.
+   * <p> Subclasses only need to implement the 3 arguments version of {@code apply}, then the
+   * curried version will be available automatically.
    */
   public static abstract class F3<T1, T2, T3, R> extends F1<T1, F2<T2, T3, R>> {
     public abstract R apply(T1 arg1, T2 arg2, T3 arg3);
@@ -98,6 +98,51 @@ public final class Currying {
       @Override
       public R apply(T1 arg1, T2 arg2) {
         return f.apply(arg1).apply(arg2);
+      }
+    };
+  }
+
+  public interface IF1<T, R> {
+    R apply(T arg);
+  }
+
+  public interface IF2<T1, T2, R> {
+    R apply(T1 arg1, T2 arg2);
+  }
+
+  public interface IF3<T1, T2, T3, R> {
+    R apply(T1 arg1, T2 arg2, T3 arg3);
+  }
+
+  public static <T, R> F1<T, R> curry(final IF1<T, R> f) {
+    assert f != null;
+
+    return new F1<T, R>() {
+      @Override
+      public R apply(T arg) {
+        return f.apply(arg);
+      }
+    };
+  }
+
+  public static <T1, T2, R> F2<T1, T2, R> curry(final IF2<T1, T2, R> f) {
+    assert f != null;
+
+    return new F2<T1, T2, R>() {
+      @Override
+      public R apply(T1 arg1, T2 arg2) {
+        return f.apply(arg1, arg2);
+      }
+    };
+  }
+
+  public static <T1, T2, T3, R> F3<T1, T2, T3, R> curry(final IF3<T1, T2, T3, R> f) {
+    assert f != null;
+
+    return new F3<T1, T2, T3, R>() {
+      @Override
+      public R apply(T1 arg1, T2 arg2, T3 arg3) {
+        return f.apply(arg1, arg2, arg3);
       }
     };
   }

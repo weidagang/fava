@@ -167,4 +167,28 @@ public class Strings {
       }
     };
   }
+
+  /**
+   * Repeats the {@code str} {@code n} times.
+   */
+  public static String times(int n, String str) {
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < n; i++) {
+      builder.append(str);
+    }
+    return builder.toString();
+  }
+
+  /**
+   * Curried version of {@link times}.
+   * @return
+   */
+  public static F2<Integer, String, String> times() {
+    return new F2<Integer, String, String>() {
+      @Override
+      public String apply(Integer n, String str) {
+        return times(n, str);
+      }
+    };
+  }
 }
