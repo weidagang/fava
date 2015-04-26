@@ -34,8 +34,10 @@ public class PromiseTest {
 
   @Test
   public void testPromise_fmap() throws Exception {
-    F1<Promise<String>, Promise<String>> f =
-        fmap(compose(split(" "), Lists.<String>reverse(), map(toUpperCase()), join().apply("_")));
+    F1<List<String>, List<String>> reverse = Lists.<String>reverse();
+    F1<String, String> toUpperCase = toUpperCase();
+
+    F1<Promise<String>, Promise<String>> f = fmap(compose(split(" "), reverse, map(toUpperCase), join("_")));
     assertEquals("JAVA_IN_PROGRAMMING_LOVE_I", f.apply(promise(URL2)).await());
   }
 

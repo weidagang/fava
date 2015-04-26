@@ -1,6 +1,5 @@
 package fava.promise;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import fava.Currying.F1;
