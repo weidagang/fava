@@ -36,9 +36,11 @@ public class PromiseTest {
   public void testPromise_fmap() throws Exception {
     F1<List<String>, List<String>> reverse = Lists.<String>reverse();
     F1<String, String> toUpperCase = toUpperCase();
+    F1<String, String> convert = compose(split(" "), reverse, map(toUpperCase), join("_"));
 
-    F1<Promise<String>, Promise<String>> f = fmap(compose(split(" "), reverse, map(toUpperCase), join("_")));
-    assertEquals("JAVA_IN_PROGRAMMING_LOVE_I", f.apply(promise(URL2)).await());
+    // fmap turns a function of type "T -> R" into a function of type "Promise<T> -> Promise<R>"
+    F1<Promise<String>, Promise<String>> convertForPromise = fmap(convert);
+    assertEquals("JAVA_IN_PROGRAMMING_LOVE_I", convertForPromise.apply(promise(URL2)).await());
   }
 
   /**

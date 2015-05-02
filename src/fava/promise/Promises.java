@@ -1,5 +1,7 @@
 package fava.promise;
 
+import static fava.Currying.curry;
+
 import java.util.List;
 
 import fava.Currying.F1;
@@ -140,11 +142,6 @@ public class Promises {
   }
 
   public static <T> F1<Promise<T>, T> getValue() {
-    return new F1<Promise<T>, T>() {
-      @Override
-      public T apply(Promise<T> promise) {
-        return promise.getValue();
-      }
-    };
+    return curry(Promise<T>::getValue);
   }
 }

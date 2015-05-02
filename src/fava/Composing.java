@@ -3,7 +3,7 @@ package fava;
 import fava.Currying.F1;
 
 /**
- * Functions for composing functions. 
+ * Functions for functional composition. 
  * 
  * @author dagang.wei (weidagang@gmail.com)
  */
@@ -11,7 +11,7 @@ public class Composing {
   /** 
    * Composes 2 functions into one function.
    * 
-   * <p> compose :: (T -> U) -> (U -> R) 
+   * <p> compose :: (T -> U) -> (U -> R) -> T -> R
    */
   public static <T, U, R> F1<T, R> compose(final F1<T, U> f1, final F1<U, R> f2) {
     return new F1<T, R>() {

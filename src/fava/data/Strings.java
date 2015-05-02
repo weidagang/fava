@@ -1,13 +1,12 @@
 package fava.data;
 
-import static fava.Currying.uncurry;
-import static fava.Folding.foldl;
-
 import java.util.Arrays;
 import java.util.List;
 
+import fava.Currying;
 import fava.Currying.F1;
 import fava.Currying.F2;
+import fava.Functions.IF2;
 
 /**
  * Functions for strings 
@@ -32,7 +31,7 @@ public class Strings {
   }
 
   /**
-   * Curried version of split with partial application as syntax sugar.
+   * Curried form of split with partial application as syntax sugar.
    * 
    * <p> splitBy :: String -> String -> [String]
    * 
@@ -70,7 +69,7 @@ public class Strings {
   }
 
   /**
-   * Curried version of {@link join}.
+   * Curried form of {@link join(String, List<String)}.
    * 
    * <p> join :: String -> [String] -> String
    * 
@@ -78,16 +77,11 @@ public class Strings {
    * @param arg2 the string list
    */
   public static F2<String, List<String>, String> join() {
-    return new F2<String, List<String>, String>() {
-      @Override
-      public String apply(String delimiter, List<String> strings) {
-        return join(delimiter, strings);
-      }
-    };
+    return Currying.curry((IF2<String, List<String>, String>)Strings::join);
   }
 
   /**
-   * Curried version of {@link join} with partial application as syntax suger.
+   * Curried form of {@link join} with partial application as syntax suger.
    * 
    * <p> join :: String -> [String] -> String
    * 
@@ -180,7 +174,7 @@ public class Strings {
   }
 
   /**
-   * Curried version of {@link times}.
+   * Curried form of {@link times}.
    * @return
    */
   public static F2<Integer, String, String> times() {
