@@ -1,36 +1,27 @@
 package fava.promise;
 
 import static fava.Currying.curry;
+import static fava.Flipping.flip;
 
 import java.util.List;
 
 import fava.Currying.F1;
 import fava.Currying.F2;
+import fava.Functions.IF2;
 import fava.data.Lists;
 import fava.promise.Promise.Listener;
 
 public class Promises {
-  public static <T, R> F1<Promise<T>, Promise<R>> fmap(final F1<T, R> f) {
-    return new F1<Promise<T>, Promise<R>>() {
-      @Override
-      public Promise<R> apply(Promise<T> promiseT) {
-        final Promise<R> promiseR = new Promise<R>() {};
+  public static <T, R> Promise<R> fmap(F1<T, R> f, Promise<T> promiseT) {
+    return promiseT.fmap(f);
+  }
 
-        promiseT.addListener(new Listener<T>() {
-          @Override
-          public void onSuccess(T value) {
-            promiseR.notifySuccess(f.apply(value));
-          }
+  public static <T, R> F2<F1<T, R>, Promise<T>, Promise<R>> fmap() {
+    return curry((IF2<F1<T,R>, Promise<T>, Promise<R>>)Promises::<T, R>fmap);
+  }
 
-          @Override
-          public void onFailure(Exception exception) {
-            promiseR.notifyFailure(exception);
-          }
-        });
-
-        return promiseR;
-      }
-    };
+  public static <T, R> F1<Promise<T>, Promise<R>> fmap(F1<T, R> f) {
+    return Promises.<T, R>fmap().apply(f);
   }
 
   public static <T1, T2, R> F2<Promise<T1>, Promise<T2>, Promise<R>> liftA(final F2<T1, T2, R> f) {

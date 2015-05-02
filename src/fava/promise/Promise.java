@@ -2,6 +2,9 @@ package fava.promise;
 
 import java.util.ArrayList;
 
+import fava.Currying.F1;
+import fava.functor.Functor;
+
 /**
  * A promise with type parameter T represents a value of type T that may be
  * available asynchronously in the future. Users of a promise get the value
@@ -13,7 +16,7 @@ import java.util.ArrayList;
  * 
  * @author dagang.wei (weidagang@gmail.com)
  */
-public class Promise<T> {
+public class Promise<T> implements Functor<T> {
   /**
    * States of a promise.
    */
@@ -143,5 +146,24 @@ public class Promise<T> {
     for (Listener<T> listener : listeners) {
       listener.onFailure(exception);
     }
+  }
+
+  @Override
+  public <R> Promise<R> fmap(F1<T, R> f) {
+    final Promise<R> promiseR = new Promise<R>() {};
+
+    this.addListener(new Listener<T>() {
+      @Override
+      public void onSuccess(T value) {
+        promiseR.notifySuccess(f.apply(value));
+      }
+
+      @Override
+      public void onFailure(Exception exception) {
+        promiseR.notifyFailure(exception);
+      }
+    });
+
+    return promiseR;
   }
 }
