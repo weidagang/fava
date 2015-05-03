@@ -1,26 +1,36 @@
 package fava.promise;
 
 import static fava.Currying.curry;
-import static fava.Flipping.flip;
 
 import java.util.List;
 
 import fava.Currying.F1;
 import fava.Currying.F2;
+import fava.Functions.IF1;
 import fava.Functions.IF2;
 import fava.data.Lists;
 import fava.promise.Promise.Listener;
 
 public class Promises {
-  public static <T, R> Promise<R> fmap(F1<T, R> f, Promise<T> promiseT) {
+  /**
+   * Lifts a function of type T -> R into a function of type Promise<T> -> Promise<R>.
+   * It is the function form of {@link Promise<T>::fmap} for composability.
+   */
+  public static <T, R> Promise<R> fmap(IF1<T, R> f, Promise<T> promiseT) {
     return promiseT.fmap(f);
   }
 
-  public static <T, R> F2<F1<T, R>, Promise<T>, Promise<R>> fmap() {
-    return curry((IF2<F1<T,R>, Promise<T>, Promise<R>>)Promises::<T, R>fmap);
+  /**
+   * The curried form of {@link Promises.fmap(F1<T, R>, Promise<T>)}.
+   */
+  public static <T, R> F2<IF1<T, R>, Promise<T>, Promise<R>> fmap() {
+    return curry((IF2<IF1<T,R>, Promise<T>, Promise<R>>)Promises::fmap);
   }
 
-  public static <T, R> F1<Promise<T>, Promise<R>> fmap(F1<T, R> f) {
+  /**
+   * The curried form of {@link Promises.fmap(F1<T, R>, Promise<T>)}.
+   */
+  public static <T, R> F1<Promise<T>, Promise<R>> fmap(IF1<T, R> f) {
     return Promises.<T, R>fmap().apply(f);
   }
 

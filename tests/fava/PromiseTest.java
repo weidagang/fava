@@ -6,6 +6,8 @@ import static fava.data.Strings.concat;
 import static fava.data.Strings.join;
 import static fava.data.Strings.split;
 import static fava.data.Strings.toUpperCase;
+import static fava.promise.Promise.failure;
+import static fava.promise.Promise.unit;
 import static fava.promise.Promises.fmap;
 import static fava.promise.Promises.liftA;
 import static java.util.Arrays.asList;
@@ -19,6 +21,7 @@ import org.junit.Test;
 
 import fava.Currying.F1;
 import fava.Currying.F2;
+import fava.Functions.IF1;
 import fava.data.Lists;
 import fava.data.Strings;
 import fava.promise.Promise;
@@ -41,6 +44,30 @@ public class PromiseTest {
     // fmap turns a function of type "T -> R" into a function of type "Promise<T> -> Promise<R>"
     F1<Promise<String>, Promise<String>> convertForPromise = fmap(convert);
     assertEquals("JAVA_IN_PROGRAMMING_LOVE_I", convertForPromise.apply(promise(URL2)).await());
+  }
+
+  /**
+   * Tests functor law: fmap id = id
+   */
+  @Test
+  public void testPromise_functorLaw1() {
+    F1<Promise<String>, Promise<String>> id = Promises.fmap((IF1<String,String>)Identity::id);
+    assertEquals(unit("foo"), id.apply(unit("foo")));
+    assertEquals(failure(new RuntimeException("xxx")), id.apply(failure(new RuntimeException("xxx"))));
+  }
+
+  /**
+   * Tests functor law: fmap (p . q) = (fmap p) . (fmap q)
+   */
+  @Test
+  public void testPromise_functorLaw2() throws Exception {
+    F1<String, List<String>> splitByComman = split(",");
+    F1<List<String>, String> joinByUnderscore = join("_");
+    String data = "I,love,Java";
+    assertEquals(fmap(compose(splitByComman, joinByUnderscore)).apply(unit(data)).await(), "I_love_Java");
+    assertEquals(
+        fmap(compose(splitByComman, joinByUnderscore)).apply(unit(data)),
+        compose(fmap(splitByComman), fmap(joinByUnderscore)).apply(unit(data)));
   }
 
   /**

@@ -2,7 +2,7 @@ package fava.promise;
 
 import java.util.ArrayList;
 
-import fava.Currying.F1;
+import fava.Functions.IF1;
 import fava.functor.Functor;
 
 /**
@@ -42,7 +42,7 @@ public class Promise<T> implements Functor<T> {
   /**
    * Lifts a value into a promise.
    */
-  public static <T> Promise<T> successOf(T value) {
+  public static <T> Promise<T> unit(T value) {
     Promise<T> promise = new Promise<T>();
     promise.state = State.SUCCEEDED;
     promise.value = value;
@@ -52,7 +52,7 @@ public class Promise<T> implements Functor<T> {
   /**
    * Lifts a failure into a promise.
    */
-  public static <T> Promise<T> failureOf(Exception exception) {
+  public static <T> Promise<T> failure(Exception exception) {
     Promise<T> promise = new Promise<T>();
     promise.state = State.FAILED;
     promise.exception = exception;
@@ -67,22 +67,28 @@ public class Promise<T> implements Functor<T> {
   }
 
   /**
-   * Await until the promise is fulfilled or rejected, then returns the value
-   * or throws the exception.
+   * Waits for the completion of the promise.
    */
-  public T await() throws Exception {
+  public void waitForCompletion() {
     while (state == State.PENDING) {
       try {
         Thread.sleep(1); //TODO: change the implementation later.
       } catch (Exception e) {
       }
     }
+  }
 
+  /**
+   * Await until the promise is fulfilled or rejected, then returns the value
+   * or throws the exception.
+   */
+  public T await() throws Exception {
+    waitForCompletion();
     if (state == State.SUCCEEDED) {
       return value;
+    } else {
+      throw exception;
     }
-
-    throw exception;
   }
 
   /**
@@ -149,7 +155,7 @@ public class Promise<T> implements Functor<T> {
   }
 
   @Override
-  public <R> Promise<R> fmap(F1<T, R> f) {
+  public <R> Promise<R> fmap(IF1<T, R> f) {
     final Promise<R> promiseR = new Promise<R>() {};
 
     this.addListener(new Listener<T>() {
@@ -165,5 +171,21 @@ public class Promise<T> implements Functor<T> {
     });
 
     return promiseR;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+      if (!(obj instanceof Promise<?>)) {
+        return false;
+      }
+
+      Promise<?> rhs = (Promise<?>)obj;
+      this.waitForCompletion();
+      rhs.waitForCompletion();
+      return this.state == rhs.state
+          ? (this.state == State.SUCCEEDED
+              ? this.value.equals(rhs.value)
+              : this.exception.getClass().equals(rhs.exception.getClass()))
+          : false;
   }
 }

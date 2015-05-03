@@ -1,7 +1,7 @@
 package fava.functor;
 
-import fava.Currying.F1;
+import fava.Functions.IF1;
 
 public interface Functor<T> {
-  <R> Functor<R> fmap(F1<T, R> f);
+  <R> Functor<R> fmap(IF1<T, R> f);
 }

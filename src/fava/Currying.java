@@ -13,7 +13,8 @@ public final class Currying {
   /** 
    * Function of type T -> R.
    */
-  public static abstract class F1<T, R> {
+  public static abstract class F1<T, R> implements IF1<T, R> {
+    @Override
     public abstract R apply(final T arg);
 
     public final R _(final T arg) {
@@ -30,7 +31,8 @@ public final class Currying {
    * <p> Subclasses only need to implement the 2 arguments version of {@code apply}, then the
    * curried version will be available automatically.
    */
-  public static abstract class F2<T1, T2, R> extends F1<T1, F1<T2, R>> {
+  public static abstract class F2<T1, T2, R> extends F1<T1, F1<T2, R>> implements IF2<T1, T2, R> {
+    @Override
     public abstract R apply(T1 arg1, T2 arg2);
 
     public final R _(T1 arg1, T2 arg2) {
@@ -57,7 +59,8 @@ public final class Currying {
    * <p> Subclasses only need to implement the 3 arguments version of {@code apply}, then the
    * curried version will be available automatically.
    */
-  public static abstract class F3<T1, T2, T3, R> extends F1<T1, F2<T2, T3, R>> {
+  public static abstract class F3<T1, T2, T3, R> extends F1<T1, F2<T2, T3, R>> implements IF3<T1, T2, T3, R> {
+    @Override
     public abstract R apply(T1 arg1, T2 arg2, T3 arg3);
 
     public final R _(T1 arg1, T2 arg2, T3 arg3) {
