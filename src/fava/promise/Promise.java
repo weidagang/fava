@@ -67,28 +67,18 @@ public class Promise<T> implements Functor<T> {
   }
 
   /**
-   * Waits for the completion of the promise.
+   * Awaits until the promise is fulfilled or rejected.
+   * 
+   * @return the value if succeeded, or null if failed.
    */
-  public void waitForCompletion() {
+  public T await() {
     while (state == State.PENDING) {
       try {
         Thread.sleep(1); //TODO: change the implementation later.
       } catch (Exception e) {
       }
     }
-  }
-
-  /**
-   * Await until the promise is fulfilled or rejected, then returns the value
-   * or throws the exception.
-   */
-  public T await() throws Exception {
-    waitForCompletion();
-    if (state == State.SUCCEEDED) {
-      return value;
-    } else {
-      throw exception;
-    }
+    return state == State.SUCCEEDED ? value : null;
   }
 
   /**
@@ -179,13 +169,12 @@ public class Promise<T> implements Functor<T> {
         return false;
       }
 
-      Promise<?> rhs = (Promise<?>)obj;
-      this.waitForCompletion();
-      rhs.waitForCompletion();
-      return this.state == rhs.state
-          ? (this.state == State.SUCCEEDED
-              ? this.value.equals(rhs.value)
-              : this.exception.getClass().equals(rhs.exception.getClass()))
+      Promise<?> that = (Promise<?>)obj;
+      Object v1 = this.await();
+      Object v2 = that.await();
+
+      return this.state == that.state
+          ? (v1 != null ? v1.equals(v2) : (v2 == null))
           : false;
   }
 }
