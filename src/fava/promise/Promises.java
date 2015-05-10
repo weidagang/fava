@@ -11,6 +11,9 @@ import fava.Functions.IF2;
 import fava.data.Lists;
 import fava.promise.Promise.Listener;
 
+/**
+ * A set of functions for {@link Promise}.
+ */
 public class Promises {
   /**
    * Lifts a function of type T -> R into a function of type Promise<T> -> Promise<R>.
@@ -142,7 +145,7 @@ public class Promises {
     };
   }
 
-  public static <T> F1<Promise<T>, T> getValue() {
-    return curry(Promise<T>::getValue);
+  public static <T> IF1<Promise<T>, T> getValue() {
+    return Promise<T>::getValue;
   }
 }

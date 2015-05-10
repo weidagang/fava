@@ -1,9 +1,9 @@
 package fava.data;
 
-import fava.Currying.F1;
-import fava.Currying.F2;
+import fava.Functions.IF1;
+import fava.functor.Functor;
 
-public class Maybe<T> {
+public class Maybe<T> implements Functor<T> {
   private boolean hasValue;
   private T value;
 
@@ -12,21 +12,9 @@ public class Maybe<T> {
     this.value = value;
   }
 
-  public static <T, R> F1<Maybe<T>, Maybe<R>> fmap(final F1<T, R> f) {
-    return new F1<Maybe<T>, Maybe<R>>() {
-      @Override
-      public Maybe<R> apply(Maybe<T> maybeT) {
-        return maybeT.hasValue ? just(f.apply(maybeT.value)) : Maybe.<R>nothing();
-      }
-    };
-  }
-
-  public static <T1, T2, R> F2<Maybe<T1>, Maybe<T2>, Maybe<R>> liftA(final F2<T1, T2, R> f) {
-    return new F2<Maybe<T1>, Maybe<T2>, Maybe<R>>() {
-      @Override public Maybe<R> apply(Maybe<T1> arg1, Maybe<T2> arg2) {
-        return (arg1.hasValue && arg2.hasValue) ? just(f.apply(arg1.value, arg2.value)) : Maybe.<R>nothing();
-      }
-    };
+  @Override
+  public <R> Maybe<R> fmap(IF1<T, R> f) {
+    return hasValue ? just(f.apply(value)) : Maybe.<R>nothing();
   }
 
   public static <T> Maybe<T> just(T t) {

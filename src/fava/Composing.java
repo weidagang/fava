@@ -1,6 +1,7 @@
 package fava;
 
 import fava.Currying.F1;
+import fava.Functions.IF1;
 
 /**
  * Functions for functional composition. 
@@ -13,7 +14,7 @@ public class Composing {
    * 
    * <p> compose :: (T -> U) -> (U -> R) -> T -> R
    */
-  public static <T, U, R> F1<T, R> compose(final F1<T, U> f1, final F1<U, R> f2) {
+  public static <T, U, R> F1<T, R> compose(final IF1<T, U> f1, final IF1<U, R> f2) {
     return new F1<T, R>() {
       @Override
       public R apply(T arg) {
@@ -27,7 +28,7 @@ public class Composing {
    * 
    * <p> compose(f1, f2, f3) = compose(compose(f1, f2), f3)
    */
-  public static <T, U1, U2, R> F1<T, R> compose(final F1<T, U1> f1, final F1<U1, U2> f2, final F1<U2, R> f3) {
+  public static <T, U1, U2, R> F1<T, R> compose(final IF1<T, U1> f1, final IF1<U1, U2> f2, final IF1<U2, R> f3) {
     return compose(compose(f1, f2), f3);
   }
 
@@ -37,10 +38,10 @@ public class Composing {
    * <p> compose(f1, f2, f3, f4) = compose(compose(f1, f2, f3), f4)
    */
   public static <T, U1, U2, U3, R> F1<T, R> compose(
-      final F1<T, U1> f1, 
-      final F1<U1, U2> f2, 
-      final F1<U2, U3> f3,
-      final F1<U3, R> f4) {
+      final IF1<T, U1> f1, 
+      final IF1<U1, U2> f2, 
+      final IF1<U2, U3> f3,
+      final IF1<U3, R> f4) {
     return compose(compose(f1, f2, f3), f4);
   }
 
@@ -50,11 +51,11 @@ public class Composing {
    * <p> compose(f1, f2, f3, f4, f5) = compose(compose(f1, f2, f3, f4), f5)
    */
   public static <T, U1, U2, U3, U4, R> F1<T, R> compose(
-      final F1<T, U1> f1, 
-      final F1<U1, U2> f2, 
-      final F1<U2, U3> f3,
-      final F1<U3, U4> f4,
-      final F1<U4, R> f5) {
+      final IF1<T, U1> f1, 
+      final IF1<U1, U2> f2, 
+      final IF1<U2, U3> f3,
+      final IF1<U3, U4> f4,
+      final IF1<U4, R> f5) {
     return compose(compose(f1, f2, f3, f4), f5);
   }
 
@@ -64,12 +65,12 @@ public class Composing {
    * <p> compose(f1, f2, f3, f4, f5, f6) = compose(compose(f1, f2, f3, f4, f5, f6)
    */
   public static <T, U1, U2, U3, U4, U5, R> F1<T, R> compose(
-      final F1<T, U1> f1, 
-      final F1<U1, U2> f2, 
-      final F1<U2, U3> f3,
-      final F1<U3, U4> f4,
-      final F1<U4, U5> f5,
-      final F1<U5, R> f6) {
+      final IF1<T, U1> f1, 
+      final IF1<U1, U2> f2, 
+      final IF1<U2, U3> f3,
+      final IF1<U3, U4> f4,
+      final IF1<U4, U5> f5,
+      final IF1<U5, R> f6) {
     return compose(compose(f1, f2, f3, f4, f5), f6);
   }
 }

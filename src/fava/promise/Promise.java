@@ -6,7 +6,7 @@ import fava.Functions.IF1;
 import fava.functor.Functor;
 
 /**
- * A promise with type parameter T represents a value of type T that may be
+ * An instance of {@code Promise<T>} represents a value of type T that may be
  * available asynchronously in the future. Users of a promise get the value
  * or failure info by registering listeners.
  * 

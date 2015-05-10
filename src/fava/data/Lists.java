@@ -11,6 +11,7 @@ import java.util.List;
 
 import fava.Currying.F1;
 import fava.Currying.F2;
+import fava.Functions.IF1;
 
 /**
  * Functions for lists.
@@ -159,7 +160,7 @@ public class Lists {
    * @param f the function to be applied to each element of the list
    * @param list the list to be mapped over
    */
-  public static <T, R> List<R> map(final F1<T, R> f, List<T> list) {
+  public static <T, R> List<R> map(final IF1<T, R> f, List<T> list) {
     final ArrayList<R> result = new ArrayList<R>(list.size());
     // Here we define {@code map} with {@code foldl}, that means {@code fold}
     // is more fundamental than {@code map} in the level of abstraction. 
@@ -169,10 +170,10 @@ public class Lists {
   /**
    * Curried version of mapn.
    */
-  public static <T, R> F2<F1<T, R>, List<T>, List<R>> map() {
-    return new F2<F1<T, R>, List<T>, List<R>>() {
+  public static <T, R> F2<IF1<T, R>, List<T>, List<R>> map() {
+    return new F2<IF1<T, R>, List<T>, List<R>>() {
       @Override
-      public List<R> apply(F1<T, R> f, List<T> list) {
+      public List<R> apply(IF1<T, R> f, List<T> list) {
         return map(f, list);
       }
     };
