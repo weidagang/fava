@@ -34,10 +34,10 @@ public class Promise<T> implements Functor<T> {
     void onFailure(Exception exception);
   }
 
-  private State state = State.PENDING;
-  private T value;
-  private Exception exception;
-  private ArrayList<Listener<T>> listeners = new ArrayList<Listener<T>>();
+  protected State state = State.PENDING;
+  protected T value;
+  protected Exception exception;
+  protected ArrayList<Listener<T>> listeners = new ArrayList<Listener<T>>();
 
   /**
    * Lifts a value into a promise.
@@ -82,13 +82,14 @@ public class Promise<T> implements Functor<T> {
   }
 
   /**
-   * Returns the value.
+   * Gets the value of this promise. If the promise failed, this method calls
+   * {@link failureToValue()} to get the default value.
    * 
-   * <p>Precondition: state == State.SUCCEEDED
+   * <p>Precondition: state == SUCCEEDED || state == FAILED
    */
   public T getValue() {
-    assert state == State.SUCCEEDED;
-    return value;
+    assert state == State.PENDING || state == State.FAILED;
+    return state == State.SUCCEEDED ? value: failureToValue();
   }
 
   /**
@@ -113,34 +114,6 @@ public class Promise<T> implements Functor<T> {
       listener.onFailure(exception);
     } else if (state == State.PENDING) {
       listeners.add(listener);
-    }
-  }
-
-  /**
-   * Fulfills the promise, moves the state from PENDING to SUCCEEDED. It's intended
-   * to be called inside of subclasses. 
-   */
-  protected final void notifySuccess(T value) {
-    assert state == State.PENDING;
-
-    this.value = value;
-    this.state = State.SUCCEEDED;
-    for (Listener<T> listener : listeners) {
-      listener.onSuccess(value);
-    }
-  }
-
-  /**
-   * Rejects the promise, moves the state from PENDING to FAILED. It's intended to be
-   * called inside of subclasses.
-   */
-  protected final void notifyFailure(Exception exception) {
-    assert state == State.PENDING;
-
-    this.exception = exception;
-    this.state = State.FAILED;
-    for (Listener<T> listener : listeners) {
-      listener.onFailure(exception);
     }
   }
 
@@ -176,5 +149,47 @@ public class Promise<T> implements Functor<T> {
       return this.state == that.state
           ? (v1 != null ? v1.equals(v2) : (v2 == null))
           : false;
+  }
+
+  /**
+   * Fulfills the promise, moves the state from PENDING to SUCCEEDED. It's intended
+   * to be called inside of subclasses. 
+   */
+  protected final void notifySuccess(T value) {
+    assert state == State.PENDING;
+
+    this.value = value;
+    this.state = State.SUCCEEDED;
+    for (Listener<T> listener : listeners) {
+      listener.onSuccess(value);
+    }
+  }
+
+  /**
+   * Rejects the promise, moves the state from PENDING to FAILED. It's intended to be
+   * called inside of subclasses.
+   */
+  protected final void notifyFailure(Exception exception) {
+    assert state == State.PENDING;
+
+    this.exception = exception;
+    this.state = State.FAILED;
+    for (Listener<T> listener : listeners) {
+      listener.onFailure(exception);
+    }
+  }
+
+  /**
+   * Gets the value for the failure case. If the promise failed, the default
+   * implementation is returning null, but subclasses can override it to return
+   * any default value or just throw an exception.
+   * 
+   * <p>Precondition: state == FAILED
+   * 
+   * @return the corresponding value for the failure.
+   */
+  protected T failureToValue() {
+    assert state == State.FAILED;
+    return null;
   }
 }
