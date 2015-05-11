@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import fava.Functions.IF1;
 import fava.functor.Functor;
+import fava.monad.Monad;
 
 /**
  * An instance of {@code Promise<T>} represents a value of type T that may be
@@ -16,7 +17,7 @@ import fava.functor.Functor;
  * 
  * @author dagang.wei (weidagang@gmail.com)
  */
-public class Promise<T> implements Functor<T> {
+public class Promise<T> implements Functor<T>, Monad<T> {
   /**
    * States of a promise.
    */
@@ -125,6 +126,40 @@ public class Promise<T> implements Functor<T> {
       @Override
       public void onSuccess(T value) {
         promiseR.notifySuccess(f.apply(value));
+      }
+
+      @Override
+      public void onFailure(Exception exception) {
+        promiseR.notifyFailure(exception);
+      }
+    });
+
+    return promiseR;
+  }
+
+  @Override
+  public <R> Promise<R> bind(IF1<T, ? extends Monad<R>> f) {
+    // promiseR is the composition of "this" promise and "that promise.
+    final Promise<R> promiseR = new Promise<R>() {};
+
+    // callback for "this" promise 
+    this.addListener(new Listener<T>() {
+      @Override
+      public void onSuccess(T value) {
+        Promise<R> that = (Promise<R>)f.apply(value);
+        assert that != null;
+        // callback for "that" promise
+        that.addListener(new Listener<R>() {
+          @Override
+          public void onSuccess(R value) {
+            promiseR.notifySuccess(value);
+          }
+
+          @Override
+          public void onFailure(Exception exception) {
+            promiseR.notifyFailure(exception);
+          }
+        });
       }
 
       @Override

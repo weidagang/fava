@@ -1,9 +1,13 @@
 package fava;
 
+/**
+ * Functional interfaces.
+ */
 public final class Functions {
   /**
    * Functional interface for function of type {@code T -> R}.
    */
+  @FunctionalInterface
   public interface IF1<T, R> {
     R apply(T arg);
   }
@@ -11,6 +15,7 @@ public final class Functions {
   /**
    * Functional interface for function of type {@code T1 -> T2 -> R}.
    */
+  @FunctionalInterface
   public interface IF2<T1, T2, R> {
     R apply(T1 arg1, T2 arg2);
   }
@@ -18,6 +23,7 @@ public final class Functions {
   /**
    * Functional interface for function of type {@code T1 -> T2 -> T3 -> R}.
    */
+  @FunctionalInterface
   public interface IF3<T1, T2, T3, R> {
     R apply(T1 arg1, T2 arg2, T3 arg3);
   }
@@ -25,6 +31,7 @@ public final class Functions {
   /**
    * Functional interface for function of type {@code T1 -> T2 -> T3 -> T4 -> R}.
    */
+  @FunctionalInterface
   public interface IF4<T1, T2, T3, T4, R> {
     R apply(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
   }
@@ -32,6 +39,7 @@ public final class Functions {
   /**
    * Functional interface for function of type {@code T1 -> T2 -> T3 -> T4 -> T5 -> R}.
    */
+  @FunctionalInterface
   public interface IF5<T1, T2, T3, T4, T5, R> {
     R apply(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
   }

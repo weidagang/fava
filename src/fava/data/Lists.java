@@ -182,7 +182,7 @@ public class Lists {
   /**
    * Curried version of map with partial application serving as syntax sugar.
    */
-  public static <T, R> F1<List<T>, List<R>> map(F1<T, R> f) {
+  public static <T, R> F1<List<T>, List<R>> map(IF1<T, R> f) {
     return Lists.<T, R>map().apply(f);
   }
 
@@ -197,17 +197,17 @@ public class Lists {
    * @param f the function to be applied to each element of the list
    * @param list the list to be mapped over
    */
-  public static <T, R> List<R> flatMap(final F1<T, List<R>> f, List<T> list) {
+  public static <T, R> List<R> flatMap(final IF1<T, List<R>> f, List<T> list) {
     return flatten(map(f, list));
   }
 
   /**
    * Curried version of flatMap.
    */
-  public static <T, R> F2<F1<T, List<R>>, List<T>, List<R>> flatMap() {
-    return new F2<F1<T, List<R>>, List<T>, List<R>>() {
+  public static <T, R> F2<IF1<T, List<R>>, List<T>, List<R>> flatMap() {
+    return new F2<IF1<T, List<R>>, List<T>, List<R>>() {
       @Override
-      public List<R> apply(F1<T, List<R>> arg1, List<T> arg2) {
+      public List<R> apply(IF1<T, List<R>> arg1, List<T> arg2) {
         return flatMap(arg1, arg2);
       }
     };
@@ -216,7 +216,7 @@ public class Lists {
   /**
    * Curried version of flatMap with partial application serving as syntax sugar.
    */
-  public static <T, R> F1<List<T>, List<R>> flatMap(F1<T, List<R>> f) {
+  public static <T, R> F1<List<T>, List<R>> flatMap(IF1<T, List<R>> f) {
     return Lists.<T, R>flatMap().apply(f);
   }
 

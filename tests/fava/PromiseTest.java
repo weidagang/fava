@@ -1,6 +1,7 @@
 package fava;
 
 import static fava.Composing.compose;
+import static fava.Currying.curry;
 import static fava.data.Lists.map;
 import static fava.data.Strings.concat;
 import static fava.data.Strings.join;
@@ -13,7 +14,6 @@ import static fava.promise.Promises.liftA;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,9 +31,15 @@ public class PromiseTest {
   private static final String URL1 = "http://www.a.com/a.htm";
   private static final String URL2 = "http://www.b.com/b.htm";
   private static final String URL3 = "http://www.c.com/c.htm";
+  private static final String URL4 = "http://www.d.com/d.htm";
+  private static final String URL5 = "http://www.e.com/e.htm";
+  private static final String URL6 = "http://www.f.com/f.htm";
   private static final String PAGE1 = "Hello world";
   private static final String PAGE2 = "I love programming in Java";
   private static final String PAGE3 = "Fava is Functional Java";
+  private static final String PAGE4 = URL5;
+  private static final String PAGE5 = URL6;
+  private static final String PAGE6 = "You're here!";
 
   @Test
   public void testPromise_fmap() throws Exception {
@@ -93,26 +99,33 @@ public class PromiseTest {
   @SuppressWarnings("unchecked")
   @Test
   public void testPromise_liftAForList() throws Exception {
+    F1<List<String>, String> join = join(",");
+    F1<List<List<String>>, List<String>> flatten = Lists.<String>flatten();
+    F1<List<String>, List<String>> unique = Lists.<String>unique();
+    F2<String, String, Integer> compareIgnoreCase = Strings.compareIgnoreCase();
+    F1<List<String>, List<String>> sort = Lists.sort(compareIgnoreCase);
+    F1<String, List<String>> split = split(" ");
+    F1<String, Promise<String>> promise = curry(PromiseTest::promise);
+
     List<Promise<String>> promises = asList(promise(URL1), promise(URL2), promise(URL3));
-    String r = liftA(join(",")).apply(promises).await();
+    String r = liftA(join).apply(promises).await();
     assertEquals(PAGE1 + "," + PAGE2 + "," + PAGE3, r);
 
-    F1<List<Promise<String>>, Promise<String>> f = compose(
-        Lists.map(Promises.fmap(split(" "))),
-        Promises.liftA(Lists.<String>flatten()),
-        Promises.fmap(Lists.<String>unique()),
-        Promises.fmap(Lists.sort(Strings.compareIgnoreCase())),
-        Promises.fmap(join(",")));
-    String result = f.apply(Arrays.asList(promise(URL1), promise(URL2), promise(URL3))).await();
-    System.out.println(result);
-
     F1<List<String>, Promise<String>> f2 = compose(
-        Lists.map(promise()),
-        Lists.map(Promises.fmap(split(" "))),
-        Promises.liftA(Lists.<String>flatten()),
-        Promises.fmap(compose(Lists.<String>unique(), Lists.sort(Strings.compareIgnoreCase()), join(","))));
-    String result2 = f2.apply(Arrays.asList(URL1, URL2, URL3)).await();
+        map(promise),
+        map(fmap(split)),
+        liftA(flatten),
+        fmap(compose(unique, sort, join)));
+    String result2 = f2.apply(asList(URL1, URL2, URL3)).await();
     System.out.println(result2);
+  }
+
+  @Test
+  public void testPromise_bind() {
+    F1<String, Promise<String>> p = curry(PromiseTest::promise);
+
+    String result = promise(URL4).bind(p).bind(p).await();
+    assertEquals(PAGE6, result);
   }
 
   /**
@@ -125,6 +138,9 @@ public class PromiseTest {
       pages.put(URL1, PAGE1);
       pages.put(URL2, PAGE2);
       pages.put(URL3, PAGE3);
+      pages.put(URL4, PAGE4);
+      pages.put(URL5, PAGE5);
+      pages.put(URL6, PAGE6);
     }
 
     public static HttpPromise promise(String url) {
@@ -155,14 +171,5 @@ public class PromiseTest {
 
   private static Promise<String> promise(String url) {
     return HttpPromise.promise(url);
-  }
-
-  private static F1<String, Promise<String>> promise() {
-    return new F1<String, Promise<String>>() {
-      @Override
-      public Promise<String> apply(String url) {
-        return promise(url);
-      }
-    };
   }
 }
