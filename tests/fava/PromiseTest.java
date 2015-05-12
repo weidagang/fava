@@ -152,9 +152,9 @@ public class PromiseTest {
       // of type Promise<T> -> Promise<R>.
       F1<Promise<String>, Promise<String>> asyncGet2 = bind(asyncGet);
   
-      Promise<String> url5 = asyncGet.apply(URL4); // the content of page 4 is the url of page 5
-      Promise<String> url6 = asyncGet2.apply(url5); // the content of page 5 is the url of page 6
-      Promise<String> page6 = asyncGet2.apply(url6); // the content of page 6 is want we finally want
+      Promise<String> page4 = asyncGet.apply(URL4); // the content of page 4 is the url of page 5
+      Promise<String> page5 = asyncGet2.apply(page4); // the content of page 5 is the url of page 6
+      Promise<String> page6 = asyncGet2.apply(page5); // the content of page 6 is want we finally want
       assertEquals(PAGE6, page6.await());
     }
   }
