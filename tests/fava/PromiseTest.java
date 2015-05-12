@@ -13,6 +13,7 @@ import static fava.promise.Promises.fmap;
 import static fava.promise.Promises.liftA;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static fava.promise.Promises.bind;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,10 +47,11 @@ public class PromiseTest {
     F1<List<String>, List<String>> reverse = Lists.<String>reverse();
     F1<String, String> toUpperCase = toUpperCase();
     F1<String, String> convert = compose(split(" "), reverse, map(toUpperCase), join("_"));
+    Promise<String> page2 = HttpPromise.asyncGet(URL2);
 
     // fmap turns a function of type "T -> R" into a function of type "Promise<T> -> Promise<R>"
     F1<Promise<String>, Promise<String>> convertForPromise = fmap(convert);
-    assertEquals("JAVA_IN_PROGRAMMING_LOVE_I", convertForPromise.apply(promise(URL2)).await());
+    assertEquals("JAVA_IN_PROGRAMMING_LOVE_I", convertForPromise.apply(page2).await());
   }
 
   /**
@@ -83,11 +85,13 @@ public class PromiseTest {
    */
   @Test
   public void testPromise_liftA() throws Exception {
+    Promise<String> page1 = HttpPromise.asyncGet(URL1);
+    Promise<String> page2 = HttpPromise.asyncGet(URL2);
     // liftA lifts concat into concatPromise. This allows us to abstract away
     // the asynchronous callbacks from the scene, consequently concatenating 2 asynchronous
     // strings looks the same as concatenating 2 regular strings.
     F2<Promise<String>, Promise<String>, Promise<String>> concatPromise = liftA(concat());
-    Promise<String> page1AndPage2 = concatPromise.apply(promise(URL1), promise(URL2));
+    Promise<String> page1AndPage2 = concatPromise.apply(page1, page2);
     assertEquals("Hello worldI love programming in Java", page1AndPage2.await());
   }
 
@@ -99,20 +103,22 @@ public class PromiseTest {
   @SuppressWarnings("unchecked")
   @Test
   public void testPromise_liftAForList() throws Exception {
+    Promise<String> page1 = HttpPromise.asyncGet(URL1);
+    Promise<String> page2 = HttpPromise.asyncGet(URL2);
+    Promise<String> page3 = HttpPromise.asyncGet(URL3);
     F1<List<String>, String> join = join(",");
     F1<List<List<String>>, List<String>> flatten = Lists.<String>flatten();
     F1<List<String>, List<String>> unique = Lists.<String>unique();
     F2<String, String, Integer> compareIgnoreCase = Strings.compareIgnoreCase();
     F1<List<String>, List<String>> sort = Lists.sort(compareIgnoreCase);
     F1<String, List<String>> split = split(" ");
-    F1<String, Promise<String>> promise = curry(PromiseTest::promise);
 
-    List<Promise<String>> promises = asList(promise(URL1), promise(URL2), promise(URL3));
+    List<Promise<String>> promises = asList(page1, page2, page3);
     String r = liftA(join).apply(promises).await();
     assertEquals(PAGE1 + "," + PAGE2 + "," + PAGE3, r);
 
     F1<List<String>, Promise<String>> f2 = compose(
-        map(promise),
+        map(HttpPromise::asyncGet),
         map(fmap(split)),
         liftA(flatten),
         fmap(compose(unique, sort, join)));
@@ -120,12 +126,37 @@ public class PromiseTest {
     System.out.println(result2);
   }
 
+  /**
+   * In this test case we will do 3 consecutive async HTTP GET operations. The
+   * content of the previous page is the url of the next page.
+   * 
+   * <p>The purpose of this test case is to demonstrate the monadic way of turning
+   * an async program into a sync program.
+   */
   @Test
   public void testPromise_bind() {
-    F1<String, Promise<String>> p = curry(PromiseTest::promise);
+    IF1<String, Promise<String>> asyncGet = HttpPromise::asyncGet;
 
-    String result = promise(URL4).bind(p).bind(p).await();
-    assertEquals(PAGE6, result);
+    // The following 2 forms are equivalent, but differ in form. I personally prefer
+    // the second form.
+
+    // 1) method chain
+    {
+      String result = HttpPromise.asyncGet(URL4).bind(asyncGet).bind(asyncGet).await();
+      assertEquals(PAGE6, result);
+    }
+
+    // 2) lifting
+    {
+      // bind function turns a function of type T -> Promise<R> into a function
+      // of type Promise<T> -> Promise<R>.
+      F1<Promise<String>, Promise<String>> asyncGet2 = bind(asyncGet);
+  
+      Promise<String> url5 = asyncGet.apply(URL4); // the content of page 4 is the url of page 5
+      Promise<String> url6 = asyncGet2.apply(url5); // the content of page 5 is the url of page 6
+      Promise<String> page6 = asyncGet2.apply(url6); // the content of page 6 is want we finally want
+      assertEquals(PAGE6, page6.await());
+    }
   }
 
   /**
@@ -143,7 +174,7 @@ public class PromiseTest {
       pages.put(URL6, PAGE6);
     }
 
-    public static HttpPromise promise(String url) {
+    public static HttpPromise asyncGet(String url) {
       return new HttpPromise(url);
     }
 
@@ -167,9 +198,5 @@ public class PromiseTest {
         })
         .start();
     }
-  }
-
-  private static Promise<String> promise(String url) {
-    return HttpPromise.promise(url);
   }
 }

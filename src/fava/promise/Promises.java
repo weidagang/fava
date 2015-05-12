@@ -4,6 +4,7 @@ import static fava.Currying.curry;
 
 import java.util.List;
 
+import fava.Currying;
 import fava.Currying.F1;
 import fava.Currying.F2;
 import fava.Functions.IF1;
@@ -143,6 +144,24 @@ public class Promises {
         return hasFailure ? Promise.State.FAILED : Promise.State.SUCCEEDED;
       }
     };
+  }
+
+  /**
+   * Binds a function of type {@code T -> Promise<R>} to an instance of {@code Promise<T>}.
+   *
+   * <p>bind :: (T -> Promise R) -> Promise T -> Promise R
+   */
+  public static <T, R> Promise<R> bind(IF1<T, Promise<R>> f, Promise<T> promiseT) {
+    return promiseT.bind(f);
+  }
+
+  /**
+   * Curried form of {@link bind(IF1<T, Promise<R>>, Promise<T>)}. This function turns a
+   * function of type {@code T -> Promise<R>} into a function of type {@code Promise T -> Promise R}.
+   */
+  public static <T, R> F1<Promise<T>, Promise<R>> bind(IF1<T, Promise<R>> f) {
+    IF2<IF1<T, Promise<R>>, Promise<T>, Promise<R>> bind = Promises::bind;
+    return curry(bind).apply(f);
   }
 
   public static <T> IF1<Promise<T>, T> getValue() {
