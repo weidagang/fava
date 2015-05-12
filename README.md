@@ -1,2 +1,2 @@
 # fava
-Fava - Functional Java.
+Fava - model functional Java.
