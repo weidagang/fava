@@ -1,2 +1,1 @@
-# fava
-Fava - model functional Java.
+# Fava - model functional Java
