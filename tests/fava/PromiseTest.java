@@ -127,11 +127,11 @@ public class PromiseTest {
   }
 
   /**
-   * In this test case we will do 3 consecutive async HTTP GET operations. The
-   * content of the previous page is the url of the next page.
+   * In this test case we will do 3 chained async HTTP GETs. The content of the
+   * previous page is the url of the next page.
    * 
-   * <p>The purpose of this test case is to demonstrate the monadic way of turning
-   * an async program into a sync program.
+   * <p>The purpose is to demonstrate the monadic way of turning an async program
+   * into a sync program.
    */
   @Test
   public void testPromise_bind() {
