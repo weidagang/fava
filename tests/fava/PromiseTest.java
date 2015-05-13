@@ -1,7 +1,6 @@
 package fava;
 
 import static fava.Composing.compose;
-import static fava.Currying.curry;
 import static fava.data.Lists.map;
 import static fava.data.Strings.concat;
 import static fava.data.Strings.join;
@@ -9,11 +8,11 @@ import static fava.data.Strings.split;
 import static fava.data.Strings.toUpperCase;
 import static fava.promise.Promise.failure;
 import static fava.promise.Promise.unit;
+import static fava.promise.Promises.bind;
 import static fava.promise.Promises.fmap;
 import static fava.promise.Promises.liftA;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static fava.promise.Promises.bind;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +46,7 @@ public class PromiseTest {
     F1<List<String>, List<String>> reverse = Lists.<String>reverse();
     F1<String, String> toUpperCase = toUpperCase();
     F1<String, String> convert = compose(split(" "), reverse, map(toUpperCase), join("_"));
-    Promise<String> page2 = HttpPromise.asyncGet(URL2);
+    Promise<String> page2 = asyncGet(URL2);
 
     // fmap turns a function of type "T -> R" into a function of type "Promise<T> -> Promise<R>"
     F1<Promise<String>, Promise<String>> convertForPromise = fmap(convert);
@@ -85,8 +84,9 @@ public class PromiseTest {
    */
   @Test
   public void testPromise_liftA() throws Exception {
-    Promise<String> page1 = HttpPromise.asyncGet(URL1);
-    Promise<String> page2 = HttpPromise.asyncGet(URL2);
+    Promise<String> page1 = asyncGet(URL1);
+    Promise<String> page2 = asyncGet(URL2);
+
     // liftA lifts concat into concatPromise. This allows us to abstract away
     // the asynchronous callbacks from the scene, consequently concatenating 2 asynchronous
     // strings looks the same as concatenating 2 regular strings.
@@ -103,9 +103,9 @@ public class PromiseTest {
   @SuppressWarnings("unchecked")
   @Test
   public void testPromise_liftAForList() throws Exception {
-    Promise<String> page1 = HttpPromise.asyncGet(URL1);
-    Promise<String> page2 = HttpPromise.asyncGet(URL2);
-    Promise<String> page3 = HttpPromise.asyncGet(URL3);
+    Promise<String> page1 = asyncGet(URL1);
+    Promise<String> page2 = asyncGet(URL2);
+    Promise<String> page3 = asyncGet(URL3);
     F1<List<String>, String> join = join(",");
     F1<List<List<String>>, List<String>> flatten = Lists.<String>flatten();
     F1<List<String>, List<String>> unique = Lists.<String>unique();
@@ -118,7 +118,7 @@ public class PromiseTest {
     assertEquals(PAGE1 + "," + PAGE2 + "," + PAGE3, r);
 
     F1<List<String>, Promise<String>> f2 = compose(
-        map(HttpPromise::asyncGet),
+        map(PromiseTest::asyncGet),
         map(fmap(split)),
         liftA(flatten),
         fmap(compose(unique, sort, join)));
@@ -135,14 +135,12 @@ public class PromiseTest {
    */
   @Test
   public void testPromise_bind() {
-    IF1<String, Promise<String>> asyncGet = HttpPromise::asyncGet;
-
     // The following 2 forms are equivalent, but differ in form. I personally prefer
     // the second form.
 
     // 1) method chain
     {
-      String result = HttpPromise.asyncGet(URL4).bind(asyncGet).bind(asyncGet).await();
+      String result = asyncGet(URL4).bind(PromiseTest::asyncGet).bind(PromiseTest::asyncGet).await();
       assertEquals(PAGE6, result);
     }
 
@@ -150,18 +148,56 @@ public class PromiseTest {
     {
       // bind function turns a function of type T -> Promise<R> into a function
       // of type Promise<T> -> Promise<R>.
-      F1<Promise<String>, Promise<String>> asyncGet2 = bind(asyncGet);
+      F1<Promise<String>, Promise<String>> liftedAsyncGet = bind(PromiseTest::asyncGet);
   
-      Promise<String> page4 = asyncGet.apply(URL4); // the contents of page 4 is the url of page 5
-      Promise<String> page5 = asyncGet2.apply(page4); // the contents of page 5 is the url of page 6
-      Promise<String> page6 = asyncGet2.apply(page5); // the contents of page 6 is the final result
+      Promise<String> page4 = asyncGet(URL4); // the contents of page 4 is the url of page 5
+      Promise<String> page5 = liftedAsyncGet.apply(page4); // the contents of page 5 is the url of page 6
+      Promise<String> page6 = liftedAsyncGet.apply(page5); // the contents of page 6 is the final result
       assertEquals(PAGE6, page6.await());
     }
   }
 
   /**
-   * Fake HTTP promise for testing's purpose. It either returns a pre-configured
-   * web page asynchronously or throws a "404 NOT FOUND" exception.
+   * Tests the invariant among {code fmap}, {code join} and {code bind}.
+   * 
+   * f :: T -> Promise<R>
+   *
+   * fmap :: (T -> R) -> (Promise<T> -> Promise<R>)
+   * join :: Promise<Promise<T>> -> Promise<T>
+   * fmap(f) :: Promise<T> -> Promise<Promise<R>>
+   * compose(fmap(f), join) :: Promise<T> -> Promise<R>
+   *
+   * bind :: (T -> Promise<R>) -> Promise<T> -> Promise<R>
+   * bind(f) :: Promise<T> -> Promise<R>
+   * 
+   * compose(fmap(f), join) = bind(f)
+   */
+  @Test
+  public void testPromise_fmapJoinEqualsToBind() {
+    // compose(fmap(f), join)
+    F1<Promise<String>, Promise<String>> liftedAsyncGet1 = compose(fmap(PromiseTest::asyncGet), Promises::<String>join);
+
+    // bind(f)
+    F1<Promise<String>, Promise<String>> liftedAsyncGet2 = bind(PromiseTest::asyncGet);
+
+    assertEquals(
+        liftedAsyncGet1.apply(asyncGet(URL4)).await(),
+        liftedAsyncGet2.apply(asyncGet(URL4)).await());
+    assertEquals(
+        liftedAsyncGet1.apply(asyncGet(URL5)).await(),
+        liftedAsyncGet2.apply(asyncGet(URL5)).await());
+    assertEquals(
+        liftedAsyncGet1.apply(asyncGet(URL6)).await(),
+        liftedAsyncGet2.apply(asyncGet(URL6)).await());
+  }
+
+  private static HttpPromise asyncGet(String url) {
+    return new HttpPromise(url);
+  }
+
+  /**
+   * Fake HTTP promise for test purpose. It either returns a pre-configured web
+   * page asynchronously or throws a 404 NOT FOUND exception.
    */
   private static class HttpPromise extends Promise<String> {
     private static final HashMap<String, String> pages = new HashMap<String, String>();
@@ -174,11 +210,7 @@ public class PromiseTest {
       pages.put(URL6, PAGE6);
     }
 
-    public static HttpPromise asyncGet(String url) {
-      return new HttpPromise(url);
-    }
-
-    private HttpPromise(final String url) {
+    public HttpPromise(final String url) {
       final long interval = 100;
       // Simulate asynchronous HTTP request of 100 ms with thread.
       new Thread(new Runnable() {

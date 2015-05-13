@@ -4,7 +4,7 @@ import static fava.Currying.curry;
 
 import java.util.List;
 
-import fava.Currying;
+import fava.Composing;
 import fava.Currying.F1;
 import fava.Currying.F2;
 import fava.Functions.IF1;
@@ -144,6 +144,41 @@ public class Promises {
         return hasFailure ? Promise.State.FAILED : Promise.State.SUCCEEDED;
       }
     };
+  }
+
+  /**
+   * Flattens a promise of promise.
+   * 
+   * join :: Promise<Promise<T>> -> Promise<T>
+   */
+  public static <T> Promise<T> join(final Promise<Promise<T>> promiseOfPromiseT) {
+    assert promiseOfPromiseT != null;
+
+    final Promise<T> promiseT = new Promise<T>();
+
+    promiseOfPromiseT.addListener(new Listener<Promise<T>>() {
+      @Override
+      public void onSuccess(Promise<T> p) {
+        p.addListener(new Listener<T>(){
+          @Override
+          public void onSuccess(T value) {
+            promiseT.notifySuccess(value);
+          }
+
+          @Override
+          public void onFailure(Exception exception) {
+            promiseT.notifyFailure(exception);
+          }
+        });
+      }
+
+      @Override
+      public void onFailure(Exception exception) {
+        promiseT.notifyFailure(exception);
+      }
+    });
+
+    return promiseT;
   }
 
   /**
