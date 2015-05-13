@@ -1,2 +1,1 @@
-# fava
-Fava - Functional Java.
+# Fava - modern functional Java
