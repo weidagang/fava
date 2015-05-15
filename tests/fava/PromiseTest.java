@@ -134,7 +134,7 @@ public class PromiseTest {
    * into a sync program.
    */
   @Test
-  public void testPromise_monad() {
+  public void testPromise_bind_flatMap() {
     // The following 2 forms are equivalent, but differ in form. I personally prefer
     // the second form.
 
@@ -158,26 +158,16 @@ public class PromiseTest {
   }
 
   /**
-   * Tests the invariant among {code fmap}, {code join} and {code bind}.
-   * 
-   * f :: T -> Promise<R>
-   *
-   * fmap :: (T -> R) -> (Promise<T> -> Promise<R>)
-   * join :: Promise<Promise<T>> -> Promise<T>
-   * fmap(f) :: Promise<T> -> Promise<Promise<R>>
-   * compose(fmap(f), join) :: Promise<T> -> Promise<R>
-   *
-   * bind :: (T -> Promise<R>) -> Promise<T> -> Promise<R>
-   * bind(f) :: Promise<T> -> Promise<R>
-   * 
-   * compose(fmap(f), join) = bind(f)
+   * Tests the invariant among {code fmap}, {code join} and {code bind}:
+   * <p>
+   * _(fmap(f), join) = flatMap(f)
    */
   @Test
   public void testPromise_fmap_join_bind() {
-    // compose(fmap(f), join)
+    // _(fmap(f), join)
     F1<Promise<String>, Promise<String>> liftedAsyncGet1 = _(fmap(PromiseTest::asyncGet), Promises::<String>join);
 
-    // bind(f)
+    // flatMap(f)
     F1<Promise<String>, Promise<String>> liftedAsyncGet2 = flatMap(PromiseTest::asyncGet);
 
     assertEquals(

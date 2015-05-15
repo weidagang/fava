@@ -148,7 +148,7 @@ public class Promises {
 
   /**
    * Flattens a promise of promise.
-   * 
+   * <p>
    * join :: Promise<Promise<T>> -> Promise<T>
    */
   public static <T> Promise<T> join(final Promise<Promise<T>> promiseOfPromiseT) {
@@ -184,7 +184,11 @@ public class Promises {
   /**
    * Flat-maps a function of type {@code T -> Promise<R>} over an instance of {@code Promise<T>}.
    *
-   * <p>flatMap :: (T -> Promise R) -> Promise T -> Promise R
+   * <p>
+   * flatMap :: (T -> Promise R) -> Promise T -> Promise R
+   *
+   * <p>
+   * There's an invariant among fmap, join and flatMap: _(fmap(f), join) = flagMap(f).
    */
   public static <T, R> Promise<R> flatMap(IF1<T, Promise<R>> f, Promise<T> promiseT) {
     return promiseT.bind(f);
