@@ -8,7 +8,7 @@ import static fava.data.Strings.split;
 import static fava.data.Strings.toUpperCase;
 import static fava.promise.Promise.failure;
 import static fava.promise.Promise.unit;
-import static fava.promise.Promises.bind;
+import static fava.promise.Promises.flatMap;
 import static fava.promise.Promises.fmap;
 import static fava.promise.Promises.liftA;
 import static java.util.Arrays.asList;
@@ -134,7 +134,7 @@ public class PromiseTest {
    * into a sync program.
    */
   @Test
-  public void testPromise_bind() {
+  public void testPromise_monad() {
     // The following 2 forms are equivalent, but differ in form. I personally prefer
     // the second form.
 
@@ -148,11 +148,11 @@ public class PromiseTest {
     {
       // bind function turns a function of type T -> Promise<R> into a function
       // of type Promise<T> -> Promise<R>.
-      F1<Promise<String>, Promise<String>> liftedAsyncGet = bind(PromiseTest::asyncGet);
+      F1<Promise<String>, Promise<String>> liftedAsyncGet = flatMap(PromiseTest::asyncGet);
   
-      Promise<String> page4 = asyncGet(URL4); // the contents of page 4 is the url of page 5
-      Promise<String> page5 = liftedAsyncGet.apply(page4); // the contents of page 5 is the url of page 6
-      Promise<String> page6 = liftedAsyncGet.apply(page5); // the contents of page 6 is the final result
+      Promise<String> page4 = asyncGet(URL4); // the contents of page4 is the url of page5
+      Promise<String> page5 = liftedAsyncGet.apply(page4); // the contents of page5 is the url of page6
+      Promise<String> page6 = liftedAsyncGet.apply(page5); // the contents of page6 is the final result
       assertEquals(PAGE6, page6.await());
     }
   }
@@ -173,12 +173,12 @@ public class PromiseTest {
    * compose(fmap(f), join) = bind(f)
    */
   @Test
-  public void testPromise_fmapJoinEqualsToBind() {
+  public void testPromise_fmap_join_bind() {
     // compose(fmap(f), join)
     F1<Promise<String>, Promise<String>> liftedAsyncGet1 = _(fmap(PromiseTest::asyncGet), Promises::<String>join);
 
     // bind(f)
-    F1<Promise<String>, Promise<String>> liftedAsyncGet2 = bind(PromiseTest::asyncGet);
+    F1<Promise<String>, Promise<String>> liftedAsyncGet2 = flatMap(PromiseTest::asyncGet);
 
     assertEquals(
         liftedAsyncGet1.apply(asyncGet(URL4)).await(),

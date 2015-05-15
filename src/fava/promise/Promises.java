@@ -182,23 +182,32 @@ public class Promises {
   }
 
   /**
-   * Binds a function of type {@code T -> Promise<R>} to an instance of {@code Promise<T>}.
+   * Flat-maps a function of type {@code T -> Promise<R>} over an instance of {@code Promise<T>}.
    *
-   * <p>bind :: (T -> Promise R) -> Promise T -> Promise R
+   * <p>flatMap :: (T -> Promise R) -> Promise T -> Promise R
    */
-  public static <T, R> Promise<R> bind(IF1<T, Promise<R>> f, Promise<T> promiseT) {
+  public static <T, R> Promise<R> flatMap(IF1<T, Promise<R>> f, Promise<T> promiseT) {
     return promiseT.bind(f);
   }
 
   /**
-   * Curried form of {@link bind(IF1<T, Promise<R>>, Promise<T>)}. This function turns a
+   * Curried form of the {@link flatMap(IF1<T, Promise<R>>, Promise<T>)}. This function turns a
    * function of type {@code T -> Promise<R>} into a function of type {@code Promise T -> Promise R}.
    */
-  public static <T, R> F1<Promise<T>, Promise<R>> bind(IF1<T, Promise<R>> f) {
-    IF2<IF1<T, Promise<R>>, Promise<T>, Promise<R>> bind = Promises::bind;
-    return curry(bind).apply(f);
+  public static <T, R> F1<Promise<T>, Promise<R>> flatMap(IF1<T, Promise<R>> f) {
+    return curry((IF2<IF1<T, Promise<R>>, Promise<T>, Promise<R>>)Promises::flatMap).apply(f);
   }
 
+  /**
+   * Gets value of the promise.
+   */
+  public static <T> T getValue(Promise<T> promise) {
+    return promise.getValue();
+  }
+
+  /**
+   * Curried form of the {@link getValue(Promise<T>)}.
+   */
   public static <T> IF1<Promise<T>, T> getValue() {
     return Promise<T>::getValue;
   }
