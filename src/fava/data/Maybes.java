@@ -1,6 +1,6 @@
 package fava.data;
 
-import static fava.Composing.compose;
+import static fava.Composing._;
 import static fava.Currying.curry;
 import static fava.Currying.uncurry;
 import fava.Currying.F1;
@@ -41,6 +41,6 @@ public final class Maybes {
   public static <T1, T2, R> F2<Maybe<T1>, Maybe<T2>, Maybe<R>> liftA(IF2<T1, T2, R> f) {
     IF1<Maybe<F1<T2, R>>, F1<Maybe<T2>, Maybe<R>>> fapply =
         (IF1<Maybe<F1<T2, R>>, F1<Maybe<T2>, Maybe<R>>>)Maybes::fapply;
-    return uncurry(compose(fmap(curry(f)), fapply));
+    return uncurry(_(fmap(curry(f)), fapply));
   }
 }

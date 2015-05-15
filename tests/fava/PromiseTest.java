@@ -1,6 +1,6 @@
 package fava;
 
-import static fava.Composing.compose;
+import static fava.Composing._;
 import static fava.data.Lists.map;
 import static fava.data.Strings.concat;
 import static fava.data.Strings.join;
@@ -45,7 +45,7 @@ public class PromiseTest {
   public void testPromise_fmap() throws Exception {
     F1<List<String>, List<String>> reverse = Lists.<String>reverse();
     F1<String, String> toUpperCase = toUpperCase();
-    F1<String, String> convert = compose(split(" "), reverse, map(toUpperCase), join("_"));
+    F1<String, String> convert = _(split(" "), reverse, map(toUpperCase), join("_"));
     Promise<String> page2 = asyncGet(URL2);
 
     // fmap turns a function of type "T -> R" into a function of type "Promise<T> -> Promise<R>"
@@ -71,10 +71,10 @@ public class PromiseTest {
     F1<String, List<String>> splitByComman = split(",");
     F1<List<String>, String> joinByUnderscore = join("_");
     String data = "I,love,Java";
-    assertEquals(fmap(compose(splitByComman, joinByUnderscore)).apply(unit(data)).await(), "I_love_Java");
+    assertEquals(fmap(_(splitByComman, joinByUnderscore)).apply(unit(data)).await(), "I_love_Java");
     assertEquals(
-        fmap(compose(splitByComman, joinByUnderscore)).apply(unit(data)),
-        compose(fmap(splitByComman), fmap(joinByUnderscore)).apply(unit(data)));
+        fmap(_(splitByComman, joinByUnderscore)).apply(unit(data)),
+        _(fmap(splitByComman), fmap(joinByUnderscore)).apply(unit(data)));
   }
 
   /**
@@ -117,11 +117,11 @@ public class PromiseTest {
     String r = liftA(join).apply(promises).await();
     assertEquals(PAGE1 + "," + PAGE2 + "," + PAGE3, r);
 
-    F1<List<String>, Promise<String>> f2 = compose(
+    F1<List<String>, Promise<String>> f2 = _(
         map(PromiseTest::asyncGet),
         map(fmap(split)),
         liftA(flatten),
-        fmap(compose(unique, sort, join)));
+        fmap(_(unique, sort, join)));
     String result2 = f2.apply(asList(URL1, URL2, URL3)).await();
     System.out.println(result2);
   }
@@ -175,7 +175,7 @@ public class PromiseTest {
   @Test
   public void testPromise_fmapJoinEqualsToBind() {
     // compose(fmap(f), join)
-    F1<Promise<String>, Promise<String>> liftedAsyncGet1 = compose(fmap(PromiseTest::asyncGet), Promises::<String>join);
+    F1<Promise<String>, Promise<String>> liftedAsyncGet1 = _(fmap(PromiseTest::asyncGet), Promises::<String>join);
 
     // bind(f)
     F1<Promise<String>, Promise<String>> liftedAsyncGet2 = bind(PromiseTest::asyncGet);

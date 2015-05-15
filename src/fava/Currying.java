@@ -16,10 +16,6 @@ public final class Currying {
   public static abstract class F1<T, R> implements IF1<T, R> {
     @Override
     public abstract R apply(final T arg);
-
-    public final R _(final T arg) {
-      return apply(arg);
-    }
   }
 
   /** 
@@ -34,10 +30,6 @@ public final class Currying {
   public static abstract class F2<T1, T2, R> extends F1<T1, F1<T2, R>> implements IF2<T1, T2, R> {
     @Override
     public abstract R apply(T1 arg1, T2 arg2);
-
-    public final R _(T1 arg1, T2 arg2) {
-      return apply(arg1, arg2);
-    }
 
     @Override
     public final F1<T2, R> apply(final T1 arg1) {
@@ -62,10 +54,6 @@ public final class Currying {
   public static abstract class F3<T1, T2, T3, R> extends F1<T1, F2<T2, T3, R>> implements IF3<T1, T2, T3, R> {
     @Override
     public abstract R apply(T1 arg1, T2 arg2, T3 arg3);
-
-    public final R _(T1 arg1, T2 arg2, T3 arg3) {
-      return apply(arg1, arg2, arg3);
-    }
 
     @Override
     public final F2<T2, T3, R> apply(final T1 arg1) {

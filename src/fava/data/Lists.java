@@ -1,6 +1,6 @@
 package fava.data;
 
-import static fava.Composing.compose;
+import static fava.Composing._;
 import static fava.Folding.foldl;
 import static fava.Folding.foldr;
 
@@ -164,7 +164,7 @@ public class Lists {
     final ArrayList<R> result = new ArrayList<R>(list.size());
     // Here we define {@code map} with {@code foldl}, that means {@code fold}
     // is more fundamental than {@code map} in the level of abstraction. 
-    return foldl(compose(f, Lists.<R>append()), result, list);
+    return foldl(_(f, Lists.<R>append()), result, list);
   }
 
   /**

@@ -10,6 +10,6 @@ public class StringsTest {
 
   @Test
   public void testTimes() {
-    assertEquals("abcabcabc", Strings.times()._(3)._("abc"));
+    assertEquals("abcabcabc", Strings.times().apply(3).apply("abc"));
   }
 }
