@@ -127,27 +127,26 @@ public class PromiseTest {
   }
 
   /**
-   * In this test case we will do 3 chained async HTTP GETs. The content of the
-   * previous page is the url of the next page.
-   * 
-   * <p>The purpose is to demonstrate the monadic way of turning an async program
-   * into a sync program.
+   * This test case will do 3 chained async HTTP GETs. The contents of the previous
+   * page is the URL of the next page. 
+   *
+   * <p>This test case demonstrated the monadic way of turning an async code into a
+   * sync code. There're 3 async HTTP operations involved, but you see no callbacks.
    */
   @Test
   public void testPromise_bind_flatMap() {
-    // The following 2 forms are equivalent, but differ in form. I personally prefer
-    // the second form.
+    // The following 2 forms are equivalent. I personally prefer the second form.
 
-    // 1) method chain
+    // 1) bind chain
     {
       String result = asyncGet(URL4).bind(PromiseTest::asyncGet).bind(PromiseTest::asyncGet).await();
       assertEquals(PAGE6, result);
     }
 
-    // 2) lifting
+    // 2) flatMap (it's essentially the bind operator of Monad with different parameter order)
     {
-      // bind function turns a function of type T -> Promise<R> into a function
-      // of type Promise<T> -> Promise<R>.
+      // flatMap lifts a function of type T -> Promise<R> into a function of type
+      // Promise<T> -> Promise<R>.
       F1<Promise<String>, Promise<String>> liftedAsyncGet = flatMap(PromiseTest::asyncGet);
   
       Promise<String> page4 = asyncGet(URL4); // the contents of page4 is the url of page5
@@ -163,7 +162,7 @@ public class PromiseTest {
    * _(fmap(f), join) = flatMap(f)
    */
   @Test
-  public void testPromise_fmap_join_bind() {
+  public void testPromise_fmap_join_flatMap_invariant() {
     // _(fmap(f), join)
     F1<Promise<String>, Promise<String>> liftedAsyncGet1 = _(fmap(PromiseTest::asyncGet), Promises::<String>join);
 
